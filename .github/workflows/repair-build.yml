@@ -86,15 +86,34 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" --version
           "$ANDROID_HOME/build-tools/35.0.0/zipalign" -h >/dev/null
 
-      - name: Create CI signing key
+      - name: Create or load signing key
+        env:
+          SIGN_KEYSTORE_BASE64: ${{ secrets.SIGN_KEYSTORE_BASE64 }}
+          SIGN_KEYSTORE_PASSWORD: ${{ secrets.SIGN_KEYSTORE_PASSWORD }}
+          SIGN_KEY_ALIAS: ${{ secrets.SIGN_KEY_ALIAS }}
+          SIGN_KEY_PASSWORD: ${{ secrets.SIGN_KEY_PASSWORD }}
         run: |
-          keytool -genkeypair -v \
-            -keystore ci-debug.keystore \
-            -storepass android \
-            -keypass android \
-            -alias androiddebugkey \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname 'CN=Android Debug,O=TMoe CI,C=CN'
+          if [ -n "$SIGN_KEYSTORE_BASE64" ]; then
+            printf '%s' "$SIGN_KEYSTORE_BASE64" | base64 -d > ci-sign.keystore
+            echo "KEYSTORE=ci-sign.keystore" >> "$GITHUB_ENV"
+            echo "STORE_PASSWORD=$SIGN_KEYSTORE_PASSWORD" >> "$GITHUB_ENV"
+            echo "KEY_ALIAS=$SIGN_KEY_ALIAS" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=$SIGN_KEY_PASSWORD" >> "$GITHUB_ENV"
+            echo 'Using repository signing key.'
+          else
+            keytool -genkeypair -v \
+              -keystore ci-debug.keystore \
+              -storepass android \
+              -keypass android \
+              -alias androiddebugkey \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname 'CN=Android Debug,O=TMoe CI,C=CN'
+            echo 'KEYSTORE=ci-debug.keystore' >> "$GITHUB_ENV"
+            echo 'STORE_PASSWORD=android' >> "$GITHUB_ENV"
+            echo 'KEY_ALIAS=androiddebugkey' >> "$GITHUB_ENV"
+            echo 'KEY_PASSWORD=android' >> "$GITHUB_ENV"
+            echo 'No repository signing key configured; using a new CI key.'
+          fi
 
       - name: Align and sign patched APK
         run: |
@@ -102,10 +121,10 @@ jobs:
             "TMoe-r241-api102-telegram-${TELEGRAM_VERSION_NAME}.apk" \
             TMoe-aligned.apk
           apksigner sign \
-            --ks ci-debug.keystore \
-            --ks-key-alias androiddebugkey \
-            --ks-pass pass:android \
-            --key-pass pass:android \
+            --ks "$KEYSTORE" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass "pass:$STORE_PASSWORD" \
+            --key-pass "pass:$KEY_PASSWORD" \
             --out "TMoe-r241-api102-telegram-${TELEGRAM_VERSION_NAME}-signed.apk" \
             TMoe-aligned.apk
           apksigner verify --verbose --print-certs \
