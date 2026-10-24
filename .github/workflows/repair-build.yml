@@ -84,7 +84,7 @@ jobs:
           "$SDKMANAGER" "build-tools;35.0.0"
           echo "$ANDROID_HOME/build-tools/35.0.0" >> "$GITHUB_PATH"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" --version
-          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -h >/dev/null
+          test -x "$ANDROID_HOME/build-tools/35.0.0/zipalign"
 
       - name: Create or load signing key
         env:
