@@ -1,0 +1,131 @@
+name: repair-build
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_release_tag:
+        description: 'Base APK release tag to patch'
+        required: true
+        default: 'base-r241-api102'
+      telegram_version_code:
+        description: 'Telegram host versionCode used by ModernUiHooks'
+        required: true
+        default: '72299'
+      telegram_version_name:
+        description: 'Telegram host versionName for the artifact label'
+        required: true
+        default: '13.1.0'
+
+permissions:
+  contents: write
+
+env:
+  BASE_TAG: ${{ inputs.base_release_tag }}
+  TELEGRAM_VERSION_CODE: ${{ inputs.telegram_version_code }}
+  TELEGRAM_VERSION_NAME: ${{ inputs.telegram_version_name }}
+
+jobs:
+  patch-sign-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download base APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "$BASE_TAG" --repo "$GITHUB_REPOSITORY" --pattern 'tmoe-installed.apk' --dir .
+          mv tmoe-installed.apk tmoe-base.apk
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Patch Telegram host version constant
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, zipfile, zlib, os
+          src = Path('tmoe-base.apk')
+          out = Path('TMoe-r241-api102-telegram-${{ env.TELEGRAM_VERSION_NAME }}.apk')
+          old_v = 71839
+          new_v = int(os.environ['TELEGRAM_VERSION_CODE'])
+          with zipfile.ZipFile(src, 'r') as zin:
+              entries = []
+              for info in zin.infolist():
+                  data = zin.read(info.filename)
+                  if info.filename == 'classes10.dex':
+                      raw = bytearray(data)
+                      old = old_v.to_bytes(4, 'little', signed=True)
+                      new = new_v.to_bytes(4, 'little', signed=True)
+                      hits = [i for i in range(len(raw)) if raw.startswith(old, i)]
+                      if hits != [24832]:
+                          raise SystemExit(f'Unexpected ModernUiHooks constant locations: {hits}')
+                      raw[24832:24836] = new
+                      raw[12:32] = hashlib.sha1(raw[32:]).digest()
+                      raw[8:12] = zlib.adler32(raw[12:]).to_bytes(4, 'little')
+                      data = bytes(raw)
+                  entries.append((info, data))
+          with zipfile.ZipFile(out, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zout:
+              for info, data in entries:
+                  zout.writestr(info, data)
+          print(out)
+          print(hashlib.sha256(out.read_bytes()).hexdigest())
+          PY
+
+      - name: Install Android signing tools
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+          "$SDKMANAGER" "build-tools;35.0.0"
+          echo "$ANDROID_HOME/build-tools/35.0.0" >> "$GITHUB_PATH"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" --version
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -h >/dev/null
+
+      - name: Create CI signing key
+        run: |
+          keytool -genkeypair -v \
+            -keystore ci-debug.keystore \
+            -storepass android \
+            -keypass android \
+            -alias androiddebugkey \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname 'CN=Android Debug,O=TMoe CI,C=CN'
+
+      - name: Align and sign patched APK
+        run: |
+          zipalign -f -p 4 \
+            "TMoe-r241-api102-telegram-${TELEGRAM_VERSION_NAME}.apk" \
+            TMoe-aligned.apk
+          apksigner sign \
+            --ks ci-debug.keystore \
+            --ks-key-alias androiddebugkey \
+            --ks-pass pass:android \
+            --key-pass pass:android \
+            --out "TMoe-r241-api102-telegram-${TELEGRAM_VERSION_NAME}-signed.apk" \
+            TMoe-aligned.apk
+          apksigner verify --verbose --print-certs \
+            "TMoe-r241-api102-telegram-${TELEGRAM_VERSION_NAME}-signed.apk"
+
+      - name: Upload signed artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TMoe-r241-api102-telegram-${{ env.TELEGRAM_VERSION_NAME }}-signed
+          path: TMoe-r241-api102-telegram-${{ env.TELEGRAM_VERSION_NAME }}-signed.apk
+          if-no-files-found: error
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="repair-r241-api102-telegram-${TELEGRAM_VERSION_NAME}-run-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" \
+            "TMoe-r241-api102-telegram-${TELEGRAM_VERSION_NAME}-signed.apk" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "TMoe r241 API102 repaired for Telegram ${TELEGRAM_VERSION_NAME}" \
+            --notes "Patched ModernUiHooks host versionCode from 71839 to ${TELEGRAM_VERSION_CODE}; signed by GitHub Actions CI."
