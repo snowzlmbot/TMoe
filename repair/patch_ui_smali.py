@@ -61,6 +61,15 @@ def change_ui(source):
     body = body.replace(needle, needle + extra)
     result = result[:m.start(2)] + body + result[m.end(2):]
     changes['prepare_resources'] = 'injected, using audited v2/v3 registers'
+    # Telegram 72299 parentLayout is a navigation interface, not ViewGroup.
+    # Invoke inherited BaseFragment.presentFragment(BaseFragment) instead of
+    # casting the interface to ViewGroup and looking for obsolete overloads.
+    template = Path(__file__).with_name('present-settings.smali').read_text()
+    nav_pattern = r'\.method private static presentSettings\(Ljava/lang/Object;\)V\n.*?\.end method'
+    result, nav_count = re.subn(nav_pattern, lambda _: template.rstrip(), result, flags=re.S)
+    if nav_count != 1:
+        raise ValueError('Expected exactly one presentSettings method')
+    changes['navigation'] = 'inherited BaseFragment.presentFragment(BaseFragment), errors logged'
     return result, changes
 
 
