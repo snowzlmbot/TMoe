@@ -284,6 +284,25 @@
     return-void
 .end method
 
+.method static synthetic lambda$onCreateView$2(Landroid/content/Context;Landroid/view/View;)V
+    .locals 1
+
+    .line 67
+    invoke-static {}, Lcc/ioctl/tmoe/startup/ModernPreferences;->selfTest()Ljava/lang/String;
+
+    move-result-object p1
+
+    const/4 v0, 0x1
+
+    invoke-static {p0, p1, v0}, Landroid/widget/Toast;->makeText(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;
+
+    move-result-object p0
+
+    invoke-virtual {p0}, Landroid/widget/Toast;->show()V
+
+    return-void
+.end method
+
 .method private text(Landroid/content/Context;Ljava/lang/String;II)Landroid/widget/TextView;
     .locals 1
 
@@ -456,45 +475,45 @@
     invoke-virtual {v5, v12, v13, v15, v6}, Landroid/widget/LinearLayout;->setPadding(IIII)V
 
     .line 50
-    const/16 v6, 0x96
+    const-string v6, "\u2039 \u8fd4\u56de"
 
-    const/16 v12, 0xf5
+    const/16 v12, 0x57
 
-    const/16 v13, 0x57
+    const/16 v13, 0x96
 
-    invoke-static {v13, v6, v12}, Landroid/graphics/Color;->rgb(III)I
+    const/16 v15, 0xf5
 
-    move-result v6
-
-    const-string v12, "\u2039 \u8fd4\u56de"
-
-    invoke-direct {v0, v1, v12, v9, v6}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->text(Landroid/content/Context;Ljava/lang/String;II)Landroid/widget/TextView;
-
-    move-result-object v6
-
-    const/16 v12, 0x11
-
-    invoke-virtual {v6, v12}, Landroid/widget/TextView;->setGravity(I)V
-
-    const/16 v12, 0xa
-
-    invoke-direct {v0, v1, v12}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
-
-    move-result v13
-
-    invoke-direct {v0, v1, v12}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
-
-    move-result v15
-
-    invoke-direct {v0, v1, v14}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+    invoke-static {v12, v13, v15}, Landroid/graphics/Color;->rgb(III)I
 
     move-result v11
 
-    invoke-direct {v0, v1, v12}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+    invoke-direct {v0, v1, v6, v9, v11}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->text(Landroid/content/Context;Ljava/lang/String;II)Landroid/widget/TextView;
+
+    move-result-object v6
+
+    const/16 v11, 0x11
+
+    invoke-virtual {v6, v11}, Landroid/widget/TextView;->setGravity(I)V
+
+    const/16 v11, 0xa
+
+    invoke-direct {v0, v1, v11}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v12
+
+    invoke-direct {v0, v1, v11}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v13
+
+    invoke-direct {v0, v1, v14}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v15
+
+    invoke-direct {v0, v1, v11}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
     move-result v9
 
-    invoke-virtual {v6, v13, v15, v11, v9}, Landroid/widget/TextView;->setPadding(IIII)V
+    invoke-virtual {v6, v12, v13, v15, v9}, Landroid/widget/TextView;->setPadding(IIII)V
 
     new-instance v9, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment$$ExternalSyntheticLambda0;
 
@@ -515,7 +534,7 @@
 
     invoke-virtual {v6, v14}, Landroid/widget/TextView;->setGravity(I)V
 
-    new-instance v11, Landroid/widget/LinearLayout$LayoutParams;
+    new-instance v12, Landroid/widget/LinearLayout$LayoutParams;
 
     const/16 v13, 0x34
 
@@ -525,9 +544,9 @@
 
     const/high16 v15, 0x3f800000    # 1.0f
 
-    invoke-direct {v11, v4, v13, v15}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
+    invoke-direct {v12, v4, v13, v15}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
 
-    invoke-virtual {v5, v6, v11}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+    invoke-virtual {v5, v6, v12}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
     .line 52
     invoke-virtual {v10, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
@@ -545,31 +564,31 @@
 
     invoke-direct {v0, v1, v14}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
-    move-result v11
+    move-result v12
 
-    invoke-direct {v0, v1, v12}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+    invoke-direct {v0, v1, v11}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
     move-result v13
 
     invoke-direct {v0, v1, v14}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
-    move-result v14
-
-    const/16 v9, 0x1e
-
-    invoke-direct {v0, v1, v9}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
-
     move-result v9
 
-    invoke-virtual {v6, v11, v13, v14, v9}, Landroid/widget/LinearLayout;->setPadding(IIII)V
+    const/16 v14, 0x1e
+
+    invoke-direct {v0, v1, v14}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v14
+
+    invoke-virtual {v6, v12, v13, v9, v14}, Landroid/widget/LinearLayout;->setPadding(IIII)V
 
     invoke-virtual {v5, v6}, Landroid/widget/ScrollView;->addView(Landroid/view/View;)V
 
     new-instance v9, Landroid/widget/LinearLayout$LayoutParams;
 
-    const/4 v11, -0x1
+    const/4 v12, -0x1
 
-    invoke-direct {v9, v11, v4, v15}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
+    invoke-direct {v9, v12, v4, v15}, Landroid/widget/LinearLayout$LayoutParams;-><init>(IIF)V
 
     invoke-virtual {v10, v5, v9}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
@@ -582,71 +601,69 @@
 
     move-result-object v5
 
-    const/16 v11, 0x12
+    const/16 v12, 0x12
 
-    invoke-direct {v0, v1, v11}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+    invoke-direct {v0, v1, v12}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
-    move-result v11
+    move-result v13
 
-    invoke-virtual {v5, v4, v4, v4, v11}, Landroid/widget/TextView;->setPadding(IIII)V
+    invoke-virtual {v5, v4, v4, v4, v13}, Landroid/widget/TextView;->setPadding(IIII)V
 
     invoke-virtual {v6, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
     .line 55
     sget-object v5, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->OPTIONS:[[Ljava/lang/String;
 
-    array-length v11, v5
+    array-length v12, v5
 
     move v13, v4
 
     :goto_4
-    if-ge v13, v11, :cond_5
+    const/16 v15, 0xc
 
-    aget-object v14, v5, v13
+    if-ge v13, v12, :cond_5
+
+    aget-object v17, v5, v13
 
     .line 56
-    aget-object v15, v14, v4
+    aget-object v9, v17, v4
 
     .line 57
-    new-instance v9, Landroid/widget/Switch;
+    new-instance v4, Landroid/widget/Switch;
 
-    invoke-direct {v9, v1}, Landroid/widget/Switch;-><init>(Landroid/content/Context;)V
+    invoke-direct {v4, v1}, Landroid/widget/Switch;-><init>(Landroid/content/Context;)V
 
-    aget-object v4, v14, v3
+    aget-object v14, v17, v3
 
-    invoke-virtual {v9, v4}, Landroid/widget/Switch;->setText(Ljava/lang/CharSequence;)V
+    invoke-virtual {v4, v14}, Landroid/widget/Switch;->setText(Ljava/lang/CharSequence;)V
 
-    const/high16 v4, 0x41800000    # 16.0f
+    const/high16 v14, 0x41800000    # 16.0f
 
-    invoke-virtual {v9, v4}, Landroid/widget/Switch;->setTextSize(F)V
+    invoke-virtual {v4, v14}, Landroid/widget/Switch;->setTextSize(F)V
 
-    invoke-virtual {v9, v7}, Landroid/widget/Switch;->setTextColor(I)V
+    invoke-virtual {v4, v7}, Landroid/widget/Switch;->setTextColor(I)V
 
-    invoke-direct {v0, v1, v12}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+    invoke-direct {v0, v1, v11}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
-    move-result v4
+    move-result v14
 
-    const/16 v3, 0xc
-
-    move-object/from16 v17, v5
-
-    invoke-direct {v0, v1, v3}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
-
-    move-result v5
-
-    invoke-direct {v0, v1, v12}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+    invoke-direct {v0, v1, v15}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
     move-result v3
 
-    move/from16 v16, v7
+    invoke-direct {v0, v1, v11}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
-    const/16 v12, 0x8
+    move-result v15
 
-    invoke-direct {v0, v1, v12}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+    move-object/from16 v16, v5
 
-    move-result v7
+    const/16 v11, 0x8
 
-    invoke-virtual {v9, v4, v5, v3, v7}, Landroid/widget/Switch;->setPadding(IIII)V
+    invoke-direct {v0, v1, v11}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v5
+
+    invoke-virtual {v4, v14, v3, v15, v5}, Landroid/widget/Switch;->setPadding(IIII)V
 
     const/16 v3, 0x38
 
@@ -654,36 +671,36 @@
 
     move-result v3
 
-    invoke-virtual {v9, v3}, Landroid/widget/Switch;->setMinHeight(I)V
+    invoke-virtual {v4, v3}, Landroid/widget/Switch;->setMinHeight(I)V
 
-    invoke-static {v15}, Lcc/ioctl/tmoe/startup/ModernPreferences;->isEnabled(Ljava/lang/String;)Z
+    invoke-static {v9}, Lcc/ioctl/tmoe/startup/ModernPreferences;->isEnabled(Ljava/lang/String;)Z
 
     move-result v3
 
-    invoke-virtual {v9, v3}, Landroid/widget/Switch;->setChecked(Z)V
+    invoke-virtual {v4, v3}, Landroid/widget/Switch;->setChecked(Z)V
 
     .line 58
     new-instance v3, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment$$ExternalSyntheticLambda1;
 
-    invoke-direct {v3, v15, v1}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment$$ExternalSyntheticLambda1;-><init>(Ljava/lang/String;Landroid/content/Context;)V
+    invoke-direct {v3, v9, v1}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment$$ExternalSyntheticLambda1;-><init>(Ljava/lang/String;Landroid/content/Context;)V
 
-    invoke-virtual {v9, v3}, Landroid/widget/Switch;->setOnCheckedChangeListener(Landroid/widget/CompoundButton$OnCheckedChangeListener;)V
+    invoke-virtual {v4, v3}, Landroid/widget/Switch;->setOnCheckedChangeListener(Landroid/widget/CompoundButton$OnCheckedChangeListener;)V
 
     .line 62
     new-instance v3, Landroid/widget/LinearLayout$LayoutParams;
 
-    const/4 v4, -0x2
+    const/4 v5, -0x2
 
-    const/4 v5, -0x1
+    const/4 v9, -0x1
 
-    invoke-direct {v3, v5, v4}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+    invoke-direct {v3, v9, v5}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
-    invoke-virtual {v6, v9, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
+    invoke-virtual {v6, v4, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
     .line 63
     const/4 v3, 0x2
 
-    aget-object v3, v14, v3
+    aget-object v3, v17, v3
 
     const/16 v4, 0xd
 
@@ -699,7 +716,7 @@
 
     invoke-direct {v0, v1, v4}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
-    move-result v7
+    move-result v9
 
     const/16 v4, 0xc
 
@@ -707,9 +724,9 @@
 
     move-result v4
 
-    const/4 v9, 0x0
+    const/4 v14, 0x0
 
-    invoke-virtual {v3, v5, v9, v7, v4}, Landroid/widget/TextView;->setPadding(IIII)V
+    invoke-virtual {v3, v5, v14, v9, v4}, Landroid/widget/TextView;->setPadding(IIII)V
 
     invoke-virtual {v6, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
@@ -736,11 +753,11 @@
 
     invoke-direct {v0, v1, v5}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
-    move-result v7
+    move-result v9
 
     const/4 v14, -0x1
 
-    invoke-direct {v4, v14, v7}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
+    invoke-direct {v4, v14, v9}, Landroid/widget/LinearLayout$LayoutParams;-><init>(II)V
 
     invoke-virtual {v6, v3, v4}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
@@ -749,15 +766,13 @@
 
     move v3, v5
 
-    move v4, v9
+    move-object/from16 v5, v16
 
-    move/from16 v7, v16
-
-    move-object/from16 v5, v17
+    const/4 v4, 0x0
 
     const/16 v9, 0xe
 
-    const/16 v12, 0xa
+    const/16 v11, 0xa
 
     goto/16 :goto_4
 
@@ -785,29 +800,107 @@
 
     invoke-direct {v0, v1, v3}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
+    move-result v7
+
+    const/16 v9, 0x14
+
+    invoke-direct {v0, v1, v9}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v9
+
+    invoke-virtual {v2, v4, v5, v7, v9}, Landroid/widget/TextView;->setPadding(IIII)V
+
+    invoke-virtual {v6, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+
+    .line 67
+    const-string v2, "\u8fd0\u884c\u529f\u80fd\u81ea\u68c0"
+
+    const/16 v4, 0xf5
+
+    const/16 v5, 0x96
+
+    const/16 v7, 0x57
+
+    invoke-static {v7, v5, v4}, Landroid/graphics/Color;->rgb(III)I
+
+    move-result v4
+
+    const/16 v5, 0x10
+
+    invoke-direct {v0, v1, v2, v5, v4}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->text(Landroid/content/Context;Ljava/lang/String;II)Landroid/widget/TextView;
+
+    move-result-object v2
+
+    invoke-direct {v0, v1, v3}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v4
+
+    const/16 v5, 0x12
+
+    invoke-direct {v0, v1, v5}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v7
+
+    invoke-direct {v0, v1, v3}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v9
+
+    invoke-direct {v0, v1, v5}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v5
+
+    invoke-virtual {v2, v4, v7, v9, v5}, Landroid/widget/TextView;->setPadding(IIII)V
+
+    new-instance v4, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment$$ExternalSyntheticLambda2;
+
+    invoke-direct {v4, v1}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment$$ExternalSyntheticLambda2;-><init>(Landroid/content/Context;)V
+
+    invoke-virtual {v2, v4}, Landroid/widget/TextView;->setOnClickListener(Landroid/view/View$OnClickListener;)V
+
+    invoke-virtual {v6, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
+
+    .line 68
+    invoke-static {}, Lcc/ioctl/tmoe/startup/ModernPreferences;->selfTest()Ljava/lang/String;
+
+    move-result-object v2
+
+    const/16 v4, 0xd
+
+    invoke-direct {v0, v1, v2, v4, v8}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->text(Landroid/content/Context;Ljava/lang/String;II)Landroid/widget/TextView;
+
+    move-result-object v2
+
+    invoke-direct {v0, v1, v3}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
+    move-result v4
+
+    invoke-direct {v0, v1, v3}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+
     move-result v3
 
-    const/16 v7, 0x14
+    const/16 v5, 0xc
 
-    invoke-direct {v0, v1, v7}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
+    invoke-direct {v0, v1, v5}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->dp(Landroid/content/Context;I)I
 
     move-result v1
+
+    const/4 v5, 0x0
 
     invoke-virtual {v2, v4, v5, v3, v1}, Landroid/widget/TextView;->setPadding(IIII)V
 
     invoke-virtual {v6, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 67
+    .line 69
     invoke-virtual {v0, v10}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->setFragmentView(Landroid/view/View;)V
 
-    .line 68
+    .line 70
     const-string v1, "TMoe-UI"
 
     const-string v2, "ModernSettingsFragment view created"
 
     invoke-static {v1, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 69
+    .line 71
     return-object v10
 .end method
 

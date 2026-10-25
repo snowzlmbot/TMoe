@@ -22,6 +22,25 @@ public final class ModernPreferences {
             return false;
         }
     }
+    /** Calls only a pure formatting method: no account, network or chat mutation. */
+    public static String selfTest() {
+        try {
+            Application app = HostInfo.getApplication();
+            Class<?> formatter = app.getClassLoader().loadClass("org.telegram.messenger.LocaleController");
+            java.lang.reflect.Method method = formatter.getDeclaredMethod("formatShortNumber", int.class, int[].class);
+            method.setAccessible(true);
+            int[] rounded = new int[1];
+            String formatted = String.valueOf(method.invoke(null, 12345, rounded));
+            boolean enabled = isEnabled("ChannelDetailNumbers");
+            boolean pass = enabled ? "12345".equals(formatted) && rounded[0] == 12345 : !"12345".equals(formatted);
+            String report = "显示精确人数=" + enabled + "；12345 → " + formatted + "；" + (pass ? "通过" : "未通过");
+            Log.i("TMoe-UI", "SELF_TEST " + report);
+            return report;
+        } catch (Throwable e) {
+            Log.e("TMoe-UI", "SELF_TEST failed", e);
+            return "自检异常：" + e.getClass().getSimpleName();
+        }
+    }
     public static boolean setEnabled(String feature, boolean value) {
         try {
             SharedPreferences p = prefs();

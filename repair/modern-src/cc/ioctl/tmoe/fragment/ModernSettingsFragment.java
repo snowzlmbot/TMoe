@@ -64,6 +64,8 @@ public final class ModernSettingsFragment extends BaseProxyFragment {
             View line=new View(c);line.setBackgroundColor(dark?0xff303947:0xffdce2ec);body.addView(line,new LinearLayout.LayoutParams(-1,dp(c,1)));
         }
         TextView note=text(c,"兼容性说明\n原设置页中仍依赖传统 API 的功能暂不显示。显示ID、抽屉手机号及其他旧API功能仍需单独适配，不在本页标为可用。\n\n修改后若界面仍显示缓存结果，返回后重新打开聊天，或重启 Telegram。无需退出账号。",14,secondary);note.setPadding(dp(c,10),dp(c,24),dp(c,10),dp(c,20));body.addView(note);
+        TextView test=text(c,"运行功能自检",16,Color.rgb(87,150,245));test.setPadding(dp(c,10),dp(c,18),dp(c,10),dp(c,18));test.setOnClickListener(v->Toast.makeText(c,ModernPreferences.selfTest(),Toast.LENGTH_LONG).show());body.addView(test);
+        TextView testResult=text(c,ModernPreferences.selfTest(),13,secondary);testResult.setPadding(dp(c,10),0,dp(c,10),dp(c,12));body.addView(testResult);
         setFragmentView(root);
         android.util.Log.i("TMoe-UI","ModernSettingsFragment view created");
         return root;
