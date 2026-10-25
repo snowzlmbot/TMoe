@@ -11,8 +11,8 @@
     if-nez v1, :tmoe_proxy_ready
     invoke-static {v0}, Lcc/ioctl/tmoe/rtti/ProxyFragmentRttiHandler;->initProxyFragmentClass(Ljava/lang/Class;)V
     :tmoe_proxy_ready
-    new-instance v1, Lcc/ioctl/tmoe/fragment/SettingsFragment;
-    invoke-direct {v1}, Lcc/ioctl/tmoe/fragment/SettingsFragment;-><init>()V
+    new-instance v1, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;
+    invoke-direct {v1}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;-><init>()V
     invoke-virtual {v1}, Lcc/ioctl/tmoe/base/BaseProxyFragment;->getProxyObject()Ljava/lang/Object;
     move-result-object v1
     const/4 v2, 0x1

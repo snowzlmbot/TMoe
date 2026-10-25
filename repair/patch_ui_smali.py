@@ -70,7 +70,25 @@ def change_ui(source):
     if nav_count != 1:
         raise ValueError('Expected exactly one presentSettings method')
     changes['navigation'] = 'inherited BaseFragment.presentFragment(BaseFragment), errors logged'
+    result = change_preferences(result, static=True)
+    changes['configuration'] = 'SharedPreferences: no legacy Hook singleton initialization'
     return result, changes
+
+
+def change_preferences(source, static=False):
+    prefix = 'private static' if static else 'private'
+    parameter = 'p0' if static else 'p1'
+    pattern = rf'\.method {prefix} isEnabled\(Ljava/lang/String;\)Z\n.*?\.end method'
+    replacement = f'''.method {prefix} isEnabled(Ljava/lang/String;)Z
+    .locals 1
+    invoke-static {{{parameter}}}, Lcc/ioctl/tmoe/startup/ModernPreferences;->isEnabled(Ljava/lang/String;)Z
+    move-result v0
+    return v0
+.end method'''
+    result, count = re.subn(pattern, lambda _: replacement, source, flags=re.S)
+    if count != 1:
+        raise ValueError('Expected one modern isEnabled method')
+    return result
 
 
 def change_registry(source):
@@ -133,6 +151,21 @@ def main():
     old_ui, old_registry = ui.read_text(), registry.read_text()
     new_ui, changes = change_ui(old_ui)
     new_registry = change_registry(old_registry)
+    entry = locate(args.decoded, 'cc/ioctl/tmoe/startup/ModernHookEntry.smali')
+    old_entry = entry.read_text()
+    new_entry = change_preferences(old_entry)
+    for old, new in {
+        'org.telegram.ui.lo': 'org.telegram.ui.ko',
+        'org.telegram.ui.iq': 'org.telegram.ui.hq',
+        'org.telegram.ui.fk': 'org.telegram.ui.ek',
+    }.items():
+        if ('"' + old + '"') not in new_entry:
+            raise ValueError('Expected modern feature target missing: ' + old)
+        new_entry = new_entry.replace('"' + old + '"', '"' + new + '"')
+    helpers = Path(__file__).with_name('modern-smali')
+    helper_files = sorted(helpers.rglob('*.smali'))
+    if not helper_files:
+        raise ValueError('Compiled modern API settings helpers are missing')
     # Validate both before writing either.
     record = {
         'target_package': 'org.telegram.messenger.web',
@@ -149,6 +182,13 @@ def main():
     }
     ui.write_text(new_ui)
     registry.write_text(new_registry)
+    entry.write_text(new_entry)
+    destination = ui.parents[4]  # same DEX as ModernUiHooks; no stub classes copied
+    for helper in helper_files:
+        output = destination / helper.relative_to(helpers)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(helper.read_text())
+    record['modern_helper_classes'] = len(helper_files)
     args.audit.write_text(json.dumps(record, indent=2))
     print(json.dumps(record, indent=2))
 
