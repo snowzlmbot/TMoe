@@ -202,6 +202,20 @@ public final class ModernRuntimeTests {
                 require(sink.requests.get(0).getClass().getSimpleName().equals("TL_messages_sendReaction"),"wrong request sink payload");return "valid message + fragment; request sink 1->0->1; no request reached actual network";
             }
         });
+        test(rows,"paid_reactions_submit_and_undo_boundary",()->{
+            try(VerificationPaidFixture fixture=new VerificationPaidFixture()){
+                enabled("ProhibitEnableReactions",false);Object first=fixture.queue();fixture.submit(first);require(fixture.requests.size()==1,"original paid queue never reached request sink");
+                require(fixture.requests.get(0).getClass().getSimpleName().equals("TL_messages_sendPaidReaction"),"not a paid request");
+                enabled("ProhibitEnableReactions",true);Object blocked=fixture.queue();fixture.submit(blocked);
+                require(fixture.requests.size()==1,"enabled still submitted paid request");
+                require(Boolean.TRUE.equals(get(blocked,"j"))&&get(fixture.stars,"B")==null&&((Number)get(fixture.stars,"g")).longValue()==0,"native undo did not roll back reservation/queue");
+                Object reactions=get(get(fixture.message,"messageOwner"),"reactions");require(((java.util.List<?>)get(reactions,"results")).isEmpty(),"local paid reaction count was not rolled back");
+                fixture.submit(blocked);require(((Number)get(fixture.stars,"g")).longValue()==0,"duplicate cancellation subtracted twice");
+                require(fixture.createBlocked()==null&&get(fixture.stars,"B")==null,"enabled created new paid queue");
+                enabled("ProhibitEnableReactions",false);Object restored=fixture.queue();fixture.submit(restored);require(fixture.requests.size()==2,"paid request did not restore");
+                return "actual paid request sink 1->0->1; native undo reservation5->0, queue cleared, no double rollback; account999 fixture only, no balance/network touched";
+            }
+        });
         test(rows,"channel_switch_panel",()->{
             Object helper=raw("org.telegram.ui.hq");set(helper,"R",2);set(helper,"Q",false);Method m=method("org.telegram.ui.hq","e");
             enabled("ProhibitChannelSwitching",false);Object off=call(m,helper);enabled("ProhibitChannelSwitching",true);Object on=call(m,helper);

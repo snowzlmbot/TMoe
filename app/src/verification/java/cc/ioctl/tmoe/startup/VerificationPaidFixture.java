@@ -11,6 +11,7 @@ final class VerificationPaidFixture implements AutoCloseable {
     private static final int ACCOUNT=999;
     private final Thread thread=Thread.currentThread();
     private final List<XposedInterface.HookHandle> hooks=new ArrayList<>();
+    private final java.util.Set<Object> bulletins=java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
     final Object stars,messages,connections,notifications,message,fragment;
     final List<Object> requests=new ArrayList<>();
     private static Class<?> c(String n)throws Exception{return ModernFeatureHooks.cls(n);}
@@ -21,7 +22,10 @@ final class VerificationPaidFixture implements AutoCloseable {
         stars=raw("vg.b6");messages=raw("org.telegram.messenger.MessagesController");connections=raw("org.telegram.tgnet.ConnectionsManager");notifications=raw("org.telegram.messenger.NotificationCenter");message=raw("org.telegram.messenger.MessageObject");fragment=raw("org.telegram.ui.ko");
         try{
             set(stars,"a",ACCOUNT);set(stars,"e",false);set(stars,"g",5L);
-            Object tl=c("org.telegram.tgnet.TLRPC$TL_message").getConstructor().newInstance(),peer=c("org.telegram.tgnet.TLRPC$TL_peerUser").getConstructor().newInstance();set(peer,"user_id",987654321L);set(tl,"peer_id",peer);set(tl,"dialog_id",987654321L);set(tl,"id",123);set(message,"messageOwner",tl);
+            Object tl=c("org.telegram.tgnet.TLRPC$TL_message").getConstructor().newInstance(),peer=c("org.telegram.tgnet.TLRPC$TL_peerUser").getConstructor().newInstance();set(peer,"user_id",987654321L);set(tl,"peer_id",peer);set(tl,"dialog_id",987654321L);set(tl,"id",123);set(message,"messageOwner",tl);set(message,"currentAccount",ACCOUNT);
+            Object reactions=c("org.telegram.tgnet.TLRPC$TL_messageReactions").getConstructor().newInstance();
+            Object count=c("org.telegram.tgnet.TLRPC$TL_reactionCount").getConstructor().newInstance();set(count,"count",5);set(count,"chosen",true);set(count,"reaction",c("org.telegram.tgnet.TLRPC$TL_reactionPaid").getConstructor().newInstance());
+            ((ArrayList<Object>)get(reactions,"results")).add(count);set(tl,"reactions",reactions);
             hook("vg.b6","y",new Class<?>[]{int.class,boolean.class},chain->((Number)chain.getArg(0)).intValue()==ACCOUNT?stars:chain.proceed());
             hook("org.telegram.messenger.MessagesController","getInstance",new Class<?>[]{int.class},chain->((Number)chain.getArg(0)).intValue()==ACCOUNT?messages:chain.proceed());
             hook("org.telegram.tgnet.ConnectionsManager","getInstance",new Class<?>[]{int.class},chain->((Number)chain.getArg(0)).intValue()==ACCOUNT?connections:chain.proceed());
@@ -32,6 +36,7 @@ final class VerificationPaidFixture implements AutoCloseable {
             hook("org.telegram.tgnet.ConnectionsManager","sendRequest",new Class<?>[]{c("org.telegram.tgnet.TLObject"),c("org.telegram.tgnet.RequestDelegate")},chain->{if(chain.getThisObject()!=connections)return chain.proceed();requests.add(chain.getArg(0));return 456;});
             hook("org.telegram.tgnet.ConnectionsManager","getCurrentTime",new Class<?>[0],chain->chain.getThisObject()==connections?123456:chain.proceed());
             hook("vg.b6","P",new Class<?>[0],chain->chain.getThisObject()==stars?null:chain.proceed());
+            hook("org.telegram.ui.Components.qc","b",new Class<?>[0],chain->bulletins.contains(chain.getThisObject())?null:chain.proceed());
             Method submit=c("vg.a6").getDeclaredMethod("b");ModernFeatureHooks.runtimeModule.deoptimize(submit);
             Method create=c("vg.b6").getDeclaredMethod("d0",c("org.telegram.messenger.MessageObject"),c("org.telegram.ui.ko"),long.class,boolean.class,boolean.class,Long.class);ModernFeatureHooks.runtimeModule.deoptimize(create);
         }catch(Throwable e){close();throw e;}
@@ -39,7 +44,7 @@ final class VerificationPaidFixture implements AutoCloseable {
     Object queue()throws Exception{
         Object q=raw("vg.a6"),identity=c("vg.v5").getConstructor(long.class,int.class).newInstance(987654321L,123);
         set(q,"q",stars);set(q,"a",identity);set(q,"b",message);set(q,"c",fragment);set(q,"i",false);set(q,"j",false);set(q,"l",true);set(q,"h",5L);set(q,"k",0L);set(q,"n",0L);
-        set(q,"d",raw("org.telegram.ui.Components.qc"));set(q,"p",c("vg.y5").getDeclaredConstructor(c("vg.a6"),int.class).newInstance(q,0));
+        Object bulletin=raw("org.telegram.ui.Components.qc");bulletins.add(bulletin);set(q,"d",bulletin);set(q,"p",c("vg.y5").getDeclaredConstructor(c("vg.a6"),int.class).newInstance(q,0));
         set(stars,"B",q);set(stars,"g",5L);return q;
     }
     void submit(Object q)throws Throwable{Method m=c("vg.a6").getDeclaredMethod("b");ModernFeatureHooks.runtimeModule.getInvoker(m).invoke(q);}
