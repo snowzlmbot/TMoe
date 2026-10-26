@@ -1,0 +1,106 @@
+{
+  "time": 1792989142013,
+  "host": "org.telegram.messenger.web",
+  "version_code": 72299,
+  "test_scope": "real hooked host methods, fabricated local data; no message sends/downloads; user switches unchanged",
+  "hook_failures": "[]",
+  "tests": [
+    {
+      "name": "exact_numbers",
+      "status": "PASS",
+      "evidence": "12.3K -> 12345"
+    },
+    {
+      "name": "protected_chat",
+      "status": "PASS",
+      "evidence": "true -> false"
+    },
+    {
+      "name": "media_spoilers",
+      "status": "PASS",
+      "evidence": "true -> false"
+    },
+    {
+      "name": "text_spoiler_mask",
+      "status": "PASS",
+      "evidence": "effect count 1 -> 0"
+    },
+    {
+      "name": "premium_animation_not_membership",
+      "status": "PASS",
+      "evidence": "effect present -> null; premium classification preserved=true"
+    },
+    {
+      "name": "reactions_all_sources",
+      "status": "PASS",
+      "evidence": "getEnabledReactionsList 1->0; getRecentReactions 1->0; getSavedReactions 1->0; getTopReactions 1->0; "
+    },
+    {
+      "name": "premium_sticker_tab",
+      "status": "PASS",
+      "evidence": "premium source size 1 -> 0"
+    },
+    {
+      "name": "chat_blur_low_performance",
+      "status": "PASS",
+      "evidence": "false -> true"
+    },
+    {
+      "name": "updates_create_and_remove_44dp_placeholder",
+      "status": "PASS",
+      "evidence": "child count 1->0->0->1; original height=154px; no blank placeholder"
+    },
+    {
+      "name": "updates_availability_reversible",
+      "status": "PASS",
+      "evidence": "true -> false -> true"
+    },
+    {
+      "name": "updates_optional_popup_blocked",
+      "status": "PASS",
+      "evidence": "real update sheet visible -> no construction -> visible; dismissed, no download clicked"
+    },
+    {
+      "name": "updates_mandatory_overlay_blocked",
+      "status": "PASS",
+      "evidence": "real mandatory full-screen update visible -> no creation; synthetic overlay removed and original activity state restored"
+    },
+    {
+      "name": "sponsored_cached_model",
+      "status": "PASS",
+      "evidence": "existing sponsored model -> null -> original, no network request"
+    },
+    {
+      "name": "greeting_real_children",
+      "status": "PASS",
+      "evidence": "real sticker View VISIBLE -> GONE -> VISIBLE; description removed"
+    },
+    {
+      "name": "reactions_send_boundary_no_network",
+      "status": "PASS",
+      "evidence": "null-message safety sample: original no-op -> blocked callback completed; no sendRequest"
+    },
+    {
+      "name": "channel_switch_panel",
+      "status": "PASS",
+      "evidence": "true -> false"
+    },
+    {
+      "name": "profile_id_long_user_chat_topic",
+      "status": "PASS",
+      "evidence": "64-bit user first; raw chat/topic correct; dialog ID ignored; zero hidden"
+    },
+    {
+      "name": "profile_id_native_adapter_pipeline",
+      "status": "PASS",
+      "evidence": "count8->9; only later row indexes shift; native c9 cell bound; unique viewType; enabled; stable diff key; no clipboard writes"
+    }
+  ],
+  "not_end_to_end_tested": [
+    "video with real audio playback",
+    "live sponsored ad from server",
+    "greeting sticker in a real empty chat"
+  ],
+  "passed": 18,
+  "failed": 0
+}
