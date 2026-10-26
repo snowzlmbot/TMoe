@@ -6,12 +6,18 @@
 .implements Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;
 
 
+# instance fields
+.field public final synthetic f$0:Landroid/app/Activity;
+
+
 # direct methods
-.method public synthetic constructor <init>()V
+.method public synthetic constructor <init>(Landroid/app/Activity;)V
     .locals 0
 
     .line 0
     invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    iput-object p1, p0, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda4;->f$0:Landroid/app/Activity;
 
     return-void
 .end method
@@ -22,7 +28,9 @@
     .locals 1
 
     .line 0
-    invoke-static {}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->lambda$run$1()Ljava/lang/String;
+    iget-object v0, p0, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda4;->f$0:Landroid/app/Activity;
+
+    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->lambda$run$13(Landroid/app/Activity;)Ljava/lang/String;
 
     move-result-object v0
 

@@ -22,7 +22,7 @@
     .locals 1
 
     .line 0
-    invoke-static {}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->lambda$run$9()Ljava/lang/String;
+    invoke-static {}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->lambda$run$6()Ljava/lang/String;
 
     move-result-object v0
 

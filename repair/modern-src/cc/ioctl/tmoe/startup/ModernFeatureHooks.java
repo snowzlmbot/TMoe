@@ -20,9 +20,12 @@ public final class ModernFeatureHooks {
     static ClassLoader loader;
     static XposedModule runtimeModule;
     private static volatile String lastTestNonce = "";
+    static volatile long updatePopupConstructions;
+    static volatile java.lang.ref.WeakReference<android.app.Dialog> lastUpdatePopup=new java.lang.ref.WeakReference<>(null);
     private static final Map<Object,Boolean> updateLayouts=Collections.synchronizedMap(new WeakHashMap<>());
     private static final Map<Activity,Boolean> activities=Collections.synchronizedMap(new WeakHashMap<>());
-    private static final Map<View,ViewGroup.LayoutParams> reactionViews=Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<View,Integer> reactionViews=Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<View,int[]> greetingViews=Collections.synchronizedMap(new WeakHashMap<>());
     private static final ArrayList<String> failures=new ArrayList<>();
     static Class<?> cls(String name) throws ClassNotFoundException { return Class.forName(name,false,loader); }
     static Field field(Class<?> c,String n) throws NoSuchFieldException {
@@ -106,6 +109,16 @@ public final class ModernFeatureHooks {
                 return chain.proceed();
             });module.deoptimize(overlay);
         }catch(Throwable e){failed("premium-effect",e);}
+        try {
+            Method measure=cls("org.telegram.ui.Components.ap").getDeclaredMethod("onMeasure",int.class,int.class);
+            module.hook(measure).setId("tmoe.72299.greetings.real_children").intercept(chain->{
+                View root=(View)chain.getThisObject();
+                if(!ModernPreferences.isEnabled("ProhibitChatGreetings"))restoreGreeting(root);
+                Object result=chain.proceed();
+                if(ModernPreferences.isEnabled("ProhibitChatGreetings"))hideGreeting(root);
+                return result;
+            });module.deoptimize(measure);
+        }catch(Throwable e){failed("greeting-view",e);}
         Log.i("TMoe-UI","EXACT_INSTALL_DONE failures="+failures);
     }
     private static void registerSelfTestLifecycle(XposedModule module) {
@@ -140,6 +153,8 @@ public final class ModernFeatureHooks {
         },800);
     }
     private static void hookUpdates(XposedModule module)throws Exception{
+        Constructor<?> popup=cls("org.telegram.ui.Components.i81").getDeclaredConstructor(android.content.Context.class,cls("org.telegram.tgnet.TLRPC$TL_help_appUpdate"),int.class);
+        module.hook(popup).setId("tmoe.72299.update.popup.observe").intercept(chain->{Object r=chain.proceed();updatePopupConstructions++;lastUpdatePopup=new java.lang.ref.WeakReference<>((android.app.Dialog)chain.getThisObject());return r;});
         Class<?> layout=cls("org.telegram.ui.Components.j81");
         Constructor<?> ctor=layout.getDeclaredConstructor(Activity.class,ViewGroup.class);
         module.hook(ctor).setId("tmoe.72299.update.layout.ctor").intercept(chain->{Object r=chain.proceed();updateLayouts.put(chain.getThisObject(),true);return r;});
@@ -165,9 +180,13 @@ public final class ModernFeatureHooks {
         }catch(Throwable e){Log.e("TMoe-UI","remove update strip failed",e);}
     }
     static void hideMandatory(Activity a){try{Object o=get(a,"C0");if(o instanceof View){((View)o).animate().cancel();((View)o).setVisibility(View.GONE);}}catch(Throwable e){Log.e("TMoe-UI","hide mandatory update failed",e);}}
-    private static void hideReaction(View v){if(!reactionViews.containsKey(v))reactionViews.put(v,v.getLayoutParams());v.setVisibility(View.GONE);ViewGroup.LayoutParams p=v.getLayoutParams();if(p!=null){p.height=0;v.setLayoutParams(p);}v.requestLayout();}
-    private static void restoreReaction(View v){if(reactionViews.containsKey(v)){ViewGroup.LayoutParams p=reactionViews.remove(v);if(p!=null){p.height=ViewGroup.LayoutParams.WRAP_CONTENT;v.setLayoutParams(p);}v.setVisibility(View.VISIBLE);}}
+    private static void hideReaction(View v){if(!reactionViews.containsKey(v))reactionViews.put(v,v.getLayoutParams()==null?ViewGroup.LayoutParams.WRAP_CONTENT:v.getLayoutParams().height);v.setVisibility(View.GONE);ViewGroup.LayoutParams p=v.getLayoutParams();if(p!=null){p.height=0;v.setLayoutParams(p);}v.requestLayout();}
+    private static void restoreReaction(View v){if(reactionViews.containsKey(v)){int height=reactionViews.remove(v);ViewGroup.LayoutParams p=v.getLayoutParams();if(p!=null){p.height=height;v.setLayoutParams(p);}v.setVisibility(View.VISIBLE);}}
+    private static void hideGreeting(View root){try{View text=(View)get(root,"c"),sticker=(View)get(root,"h");if(!greetingViews.containsKey(root))greetingViews.put(root,new int[]{text.getVisibility(),sticker.getVisibility()});text.setVisibility(View.GONE);sticker.setVisibility(View.GONE);}catch(Throwable e){Log.e("TMoe-UI","hide greeting",e);}}
+    private static void restoreGreeting(View root){try{int[] state=greetingViews.remove(root);if(state!=null){((View)get(root,"c")).setVisibility(state[0]);((View)get(root,"h")).setVisibility(state[1]);}}catch(Throwable e){Log.e("TMoe-UI","restore greeting",e);}}
     public static void onToggleChanged(String name){
+        if(name.equals("ProhibitEnableReactions")&&!ModernPreferences.isEnabled(name))synchronized(reactionViews){for(View v:new ArrayList<>(reactionViews.keySet()))restoreReaction(v);}
+        if(name.equals("ProhibitChatGreetings")&&!ModernPreferences.isEnabled(name))synchronized(greetingViews){for(View v:new ArrayList<>(greetingViews.keySet()))restoreGreeting(v);}
         if(name.equals("ProhibitUpdates")){
             synchronized(updateLayouts){for(Object l:new ArrayList<>(updateLayouts.keySet()))try{if(ModernPreferences.isEnabled(name))removeUpdateStrip(l);else l.getClass().getMethod("updateAppUpdateViews",int.class,boolean.class).invoke(l,account(),false);}catch(Throwable e){Log.e("TMoe-UI","refresh update UI",e);}}
             synchronized(activities){for(Activity a:new ArrayList<>(activities.keySet())){if(ModernPreferences.isEnabled(name))hideMandatory(a);}}

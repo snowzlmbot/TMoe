@@ -30,7 +30,7 @@
     .line 0
     iget-object v0, p0, Lcc/ioctl/tmoe/startup/ModernFeatureHooks$$ExternalSyntheticLambda1;->f$0:Landroid/app/Activity;
 
-    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->lambda$maybeRunExplicitTest$9(Landroid/app/Activity;)V
+    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->lambda$maybeRunExplicitTest$10(Landroid/app/Activity;)V
 
     return-void
 .end method

@@ -120,14 +120,55 @@ public final class ModernRuntimeTests {
         test(rows,"updates_optional_popup_blocked",()->{
             Object app=getStatic("org.telegram.messenger.ApplicationLoader","applicationLoaderInstance"),update=instance("org.telegram.tgnet.TLRPC$TL_help_appUpdate");
             Method popup=method("org.telegram.messenger.ApplicationLoaderImpl","showUpdateAppPopup",android.content.Context.class,c("org.telegram.tgnet.TLRPC$TL_help_appUpdate"),int.class);
-            int before=activity.getWindow().getDecorView().getViewTreeObserver().isAlive()?1:0;
-            enabled("ProhibitUpdates",true);Object result=call(popup,app,activity,update,ModernFeatureHooks.account());
-            require(Boolean.TRUE.equals(result)&&before==1,"popup not handled");return "actual popup method returned handled=true without constructing/showing update sheet";
+            set(update,"document",instance("org.telegram.tgnet.TLRPC$TL_document"));set(update,"version","99.99-local-test");set(update,"text","Local test: no download requested");
+            long before=ModernFeatureHooks.updatePopupConstructions;
+            android.app.Dialog created=null;
+            try{
+                enabled("ProhibitUpdates",false);call(popup,app,activity,update,ModernFeatureHooks.account());created=ModernFeatureHooks.lastUpdatePopup.get();
+                require(ModernFeatureHooks.updatePopupConstructions==before+1&&created!=null&&created.isShowing(),"original popup was not visible");created.dismiss();
+                enabled("ProhibitUpdates",true);Object result=call(popup,app,activity,update,ModernFeatureHooks.account());
+                require(Boolean.TRUE.equals(result)&&ModernFeatureHooks.updatePopupConstructions==before+1&&!created.isShowing(),"popup still created while enabled");
+                enabled("ProhibitUpdates",false);call(popup,app,activity,update,ModernFeatureHooks.account());created=ModernFeatureHooks.lastUpdatePopup.get();
+                require(ModernFeatureHooks.updatePopupConstructions==before+2&&created!=null&&created.isShowing(),"popup did not restore");
+                return "real update sheet visible -> no construction -> visible; dismissed, no download clicked";
+            }finally{if(created!=null&&created.isShowing())created.dismiss();}
         });
         test(rows,"updates_mandatory_overlay_blocked",()->{
             Object update=instance("org.telegram.tgnet.TLRPC$TL_help_appUpdate");set(update,"can_not_skip",true);set(update,"text","local test only");
-            Object before=get(activity,"C0");Method overlay=method("org.telegram.ui.LaunchActivity","M0",int.class,c("org.telegram.tgnet.TLRPC$TL_help_appUpdate"),boolean.class);
-            enabled("ProhibitUpdates",true);call(overlay,activity,ModernFeatureHooks.account(),update,false);require(get(activity,"C0")==before,"mandatory overlay was created");return "can_not_skip=true update supplied; no overlay created";
+            Object before=get(activity,"C0");require(before==null,"existing mandatory update view: skip destructive synthetic test");
+            Method overlay=method("org.telegram.ui.LaunchActivity","M0",int.class,c("org.telegram.tgnet.TLRPC$TL_help_appUpdate"),boolean.class);
+            View created=null;android.view.ViewGroup parent=null;
+            try{
+                enabled("ProhibitUpdates",false);call(overlay,activity,ModernFeatureHooks.account(),update,false);created=(View)get(activity,"C0");
+                require(created!=null&&created.getVisibility()==View.VISIBLE,"original mandatory overlay not shown");parent=(android.view.ViewGroup)created.getParent();created.setVisibility(View.GONE);parent.removeView(created);set(activity,"C0",null);
+                enabled("ProhibitUpdates",true);call(overlay,activity,ModernFeatureHooks.account(),update,false);require(get(activity,"C0")==null,"mandatory overlay created while blocked");
+                return "real mandatory full-screen update visible -> no creation; synthetic overlay removed and original activity state restored";
+            }finally{Object current=get(activity,"C0");if(current instanceof View){View v=(View)current;v.setVisibility(View.GONE);if(v.getParent() instanceof android.view.ViewGroup)((android.view.ViewGroup)v.getParent()).removeView(v);}set(activity,"C0",before);}
+        });
+        test(rows,"sponsored_cached_model",()->{
+            Object controller=raw("org.telegram.messenger.MessagesController"),map=instance("z.f");
+            Object info=c("org.telegram.messenger.MessagesController$SponsoredMessagesInfo").getDeclaredConstructor(c("org.telegram.messenger.MessagesController")).newInstance(controller);
+            set(info,"loading",false);set(info,"loadTime",SystemClock.elapsedRealtime());
+            c("z.f").getDeclaredMethod("k",Object.class,long.class).invoke(map,info,54321L);set(controller,"sponsoredMessages",map);
+            Method getter=method("org.telegram.messenger.MessagesController","getSponsoredMessages",long.class);
+            enabled("HideSponsoredMsg",false);Object off=call(getter,controller,54321L);enabled("HideSponsoredMsg",true);Object on=call(getter,controller,54321L);enabled("HideSponsoredMsg",false);Object restore=call(getter,controller,54321L);
+            require(off==info&&on==null&&restore==info,"cached ad model not filtered reversibly");return "existing sponsored model -> null -> original, no network request";
+        });
+        test(rows,"greeting_real_children",()->{
+            Class<?> viewClass=c("org.telegram.ui.Components.ap");
+            enabled("ProhibitChatGreetings",false);Object object=viewClass.getDeclaredConstructor(android.content.Context.class,int.class,c("org.telegram.tgnet.TLRPC$Document"),c("org.telegram.ui.ActionBar.j6")).newInstance(activity,ModernFeatureHooks.account(),instance("org.telegram.tgnet.TLRPC$TL_document"),null);
+            View view=(View)object;Method measure=method(viewClass.getName(),"onMeasure",int.class,int.class);
+            int w=View.MeasureSpec.makeMeasureSpec(1000,View.MeasureSpec.EXACTLY),h=View.MeasureSpec.makeMeasureSpec(1800,View.MeasureSpec.AT_MOST);
+            call(measure,object,w,h);View text=(View)get(object,"c"),sticker=(View)get(object,"h");int off=sticker.getVisibility();
+            enabled("ProhibitChatGreetings",true);call(measure,object,w,h);int on=sticker.getVisibility();require(off==View.VISIBLE&&on==View.GONE&&text.getVisibility()==View.GONE,"greeting children were not hidden");
+            enabled("ProhibitChatGreetings",false);call(measure,object,w,h);require(sticker.getVisibility()==View.VISIBLE,"greeting view did not restore");return "real sticker View VISIBLE -> GONE -> VISIBLE; description removed";
+        });
+        test(rows,"reactions_send_boundary_no_network",()->{
+            Object helper=raw("org.telegram.messenger.SendMessagesHelper");final int[] callbacks={0};Runnable done=()->callbacks[0]++;
+            Method send=method("org.telegram.messenger.SendMessagesHelper","sendReaction",c("org.telegram.messenger.MessageObject"),ArrayList.class,c("vf.p0"),boolean.class,boolean.class,c("org.telegram.ui.ActionBar.r2"),Runnable.class);
+            enabled("ProhibitEnableReactions",false);call(send,helper,null,new ArrayList<>(),null,false,false,null,done);int off=callbacks[0];
+            enabled("ProhibitEnableReactions",true);call(send,helper,null,new ArrayList<>(),null,false,false,null,done);int on=callbacks[0];
+            require(off==0&&on==1,"send hook did not short-circuit/complete callback");return "null-message safety sample: original no-op -> blocked callback completed; no sendRequest";
         });
         test(rows,"channel_switch_panel",()->{
             Object helper=raw("org.telegram.ui.hq");set(helper,"R",2);set(helper,"Q",false);Method m=method("org.telegram.ui.hq","e");

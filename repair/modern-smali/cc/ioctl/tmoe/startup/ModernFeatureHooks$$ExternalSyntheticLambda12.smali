@@ -22,7 +22,7 @@
     .locals 0
 
     .line 0
-    invoke-static {p1}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->lambda$registerSelfTestLifecycle$8(Lio/github/libxposed/api/XposedInterface$Chain;)Ljava/lang/Object;
+    invoke-static {p1}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->lambda$hookUpdates$14(Lio/github/libxposed/api/XposedInterface$Chain;)Ljava/lang/Object;
 
     move-result-object p1
 
