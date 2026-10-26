@@ -13,7 +13,16 @@ public final class ModernPreferences {
         if (app == null) return null;
         return app.getSharedPreferences("tmoe_modern_api102", 0);
     }
+    private static final ThreadLocal<java.util.Map<String, Boolean>> TEST_OVERRIDES = new ThreadLocal<>();
+    public static void setTestOverride(String feature, boolean value) {
+        java.util.Map<String,Boolean> map = TEST_OVERRIDES.get();
+        if (map == null) { map = new java.util.HashMap<>(); TEST_OVERRIDES.set(map); }
+        map.put(feature, value);
+    }
+    public static void clearTestOverrides() { TEST_OVERRIDES.remove(); }
     public static boolean isEnabled(String feature) {
+        java.util.Map<String,Boolean> map = TEST_OVERRIDES.get();
+        if (map != null && map.containsKey(feature)) return map.get(feature);
         try {
             SharedPreferences p = prefs();
             return p != null && p.getBoolean(feature + ".enabled", false);

@@ -16,13 +16,14 @@ import cc.ioctl.tmoe.startup.ModernPreferences;
 /** Native settings screen for verified API102 hook targets. No legacy hook singletons. */
 public final class ModernSettingsFragment extends BaseProxyFragment {
     private static final String[][] OPTIONS = {
+        {"ProhibitUpdates", "禁止更新", "屏蔽应用内更新弹窗、强制更新页和底部提示条，并移除44dp占位；关闭恢复原逻辑"},
         {"AntiAntiForward", "解除复制保存消息限制", "控制转发及受限媒体判定；请尊重内容作者权限"},
         {"HideSponsoredMsg", "隐藏赞助消息", "拦截模型与聊天页广告插入入口；不保证清除已缓存广告"},
-        {"ProhibitSpoilers", "禁用媒体剧透", "作用于媒体剧透判定；文字剧透尚未适配"},
+        {"ProhibitSpoilers", "禁用剧透", "同时拦截媒体剧透判定和文字剧透遮罩生成；已打开消息需重新布局"},
         {"ForceBlurChatAvailable", "允许顶栏模糊", "解除 Telegram 的模糊可用性限制"},
         {"ChannelDetailNumbers", "显示精确人数", "不把人数缩写为 K 或 M"},
-        {"DisablePremiumStickerAnimation", "禁用会员贴纸动画", "通过会员贴纸判定拦截"},
-        {"ProhibitEnableReactions", "禁止表情回应", "拦截可用回应列表，必要时重新打开聊天"},
+        {"DisablePremiumStickerAnimation", "禁用会员贴纸特效", "拦截会员贴纸附加特效数据与播放入口，不伪造会员资格；基础贴纸仍可显示"},
+        {"ProhibitEnableReactions", "禁止表情回应", "覆盖最近、收藏、热门与群限定入口，并拦截回应发送；已有聊天需重新打开"},
         {"HidePremiumStickerSetTab", "隐藏会员贴纸包", "过滤会员贴纸最近使用列表"},
         {"ProhibitChatGreetings", "禁用问候贴纸", "抑制空白聊天问候视图；需重新打开聊天"},
         {"KeepVideoMuted", "保持可见视频静音", "阻止自动切入有声播放；不影响你主动播放的视频"},
@@ -57,15 +58,15 @@ public final class ModernSettingsFragment extends BaseProxyFragment {
             Switch toggle=new Switch(c);toggle.setText(option[1]);toggle.setTextSize(16);toggle.setTextColor(fg);toggle.setPadding(dp(c,10),dp(c,12),dp(c,10),dp(c,8));toggle.setMinHeight(dp(c,56));toggle.setChecked(ModernPreferences.isEnabled(key));
             toggle.setOnCheckedChangeListener((button,checked)->{
                 if(!ModernPreferences.setEnabled(key,checked)) Toast.makeText(c,"保存失败，请查看 TMoe-UI 日志",Toast.LENGTH_LONG).show();
-                else android.util.Log.i("TMoe-UI","preference saved: "+key+"="+checked);
+                else { android.util.Log.i("TMoe-UI","preference saved: "+key+"="+checked); cc.ioctl.tmoe.startup.ModernFeatureHooks.onToggleChanged(key); }
             });
             body.addView(toggle,new LinearLayout.LayoutParams(-1,-2));
             TextView detail=text(c,option[2],13,secondary);detail.setPadding(dp(c,10),0,dp(c,10),dp(c,12));body.addView(detail);
             View line=new View(c);line.setBackgroundColor(dark?0xff303947:0xffdce2ec);body.addView(line,new LinearLayout.LayoutParams(-1,dp(c,1)));
         }
         TextView note=text(c,"兼容性说明\n原设置页中仍依赖传统 API 的功能暂不显示。显示ID、抽屉手机号及其他旧API功能仍需单独适配，不在本页标为可用。\n\n修改后若界面仍显示缓存结果，返回后重新打开聊天，或重启 Telegram。无需退出账号。",14,secondary);note.setPadding(dp(c,10),dp(c,24),dp(c,10),dp(c,20));body.addView(note);
-        TextView test=text(c,"运行功能自检",16,Color.rgb(87,150,245));test.setPadding(dp(c,10),dp(c,18),dp(c,10),dp(c,18));test.setOnClickListener(v->Toast.makeText(c,ModernPreferences.selfTest(),Toast.LENGTH_LONG).show());body.addView(test);
-        TextView testResult=text(c,ModernPreferences.selfTest(),13,secondary);testResult.setPadding(dp(c,10),0,dp(c,10),dp(c,12));body.addView(testResult);
+        TextView test=text(c,"运行真实功能差分测试",16,Color.rgb(87,150,245));test.setPadding(dp(c,10),dp(c,18),dp(c,10),dp(c,18));test.setOnClickListener(v->{String result=cc.ioctl.tmoe.startup.ModernRuntimeTests.run((android.app.Activity)c);Toast.makeText(c,result,Toast.LENGTH_LONG).show();});body.addView(test);
+        TextView testResult=text(c,"测试调用Telegram真实方法，对比关闭/开启/恢复结果；使用临时线程配置，不改用户开关、不发送消息、不下载更新。它不代表真实视频播放和服务器广告已全部端到端验收。",13,secondary);testResult.setPadding(dp(c,10),0,dp(c,10),dp(c,12));body.addView(testResult);
         setFragmentView(root);
         android.util.Log.i("TMoe-UI","ModernSettingsFragment view created");
         return root;

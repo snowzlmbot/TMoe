@@ -71,6 +71,11 @@ def change_ui(source):
         raise ValueError('Expected exactly one presentSettings method')
     changes['navigation'] = 'inherited BaseFragment.presentFragment(BaseFragment), errors logged'
     result = change_preferences(result, static=True)
+    install_needle = 'invoke-static {p0, p1}, Lcc/ioctl/tmoe/startup/ModernUiHooks;->hookSettingsEntry(Lio/github/libxposed/api/XposedModule;Ljava/lang/ClassLoader;)V'
+    if result.count(install_needle) != 1:
+        raise ValueError('Modern installPrepared entry point not found exactly once')
+    result = result.replace(install_needle,
+        'invoke-static {p0, p1}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->install(Lio/github/libxposed/api/XposedModule;Ljava/lang/ClassLoader;)V\n\n    ' + install_needle)
     changes['configuration'] = 'SharedPreferences: no legacy Hook singleton initialization'
     return result, changes
 
@@ -154,6 +159,16 @@ def main():
     entry = locate(args.decoded, 'cc/ioctl/tmoe/startup/ModernHookEntry.smali')
     old_entry = entry.read_text()
     new_entry = change_preferences(old_entry)
+    # Do not falsify premium membership to suppress an animation. Remove the
+    # old registration; modern hooks target animation and overlay routines.
+    premium_pattern = (r'(const-string v9, "DisablePremiumStickerAnimation"\s+'
+        r'const-string v10, "modern\.premium_sticker"\s+'
+        r'const-string v5, "org\.telegram\.messenger\.MessageObject"\s+'
+        r'const-string v6, "isPremiumSticker"\s+)'
+        r'invoke-direct/range \{v3 \.\. v10\}, Lcc/ioctl/tmoe/startup/ModernHookEntry;->hookBooleanModelMethod[^\n]+')
+    new_entry, premium_removed = re.subn(premium_pattern, lambda m: m.group(1)+'nop', new_entry)
+    if premium_removed != 1:
+        raise ValueError('Expected exactly one legacy premium predicate registration')
     for old, new in {
         'org.telegram.ui.lo': 'org.telegram.ui.ko',
         'org.telegram.ui.iq': 'org.telegram.ui.hq',

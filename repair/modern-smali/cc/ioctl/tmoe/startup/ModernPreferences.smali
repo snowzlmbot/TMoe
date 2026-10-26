@@ -3,7 +3,34 @@
 .source "ModernPreferences.java"
 
 
+# static fields
+.field private static final TEST_OVERRIDES:Ljava/lang/ThreadLocal;
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "Ljava/lang/ThreadLocal<",
+            "Ljava/util/Map<",
+            "Ljava/lang/String;",
+            "Ljava/lang/Boolean;",
+            ">;>;"
+        }
+    .end annotation
+.end field
+
+
 # direct methods
+.method static constructor <clinit>()V
+    .locals 1
+
+    .line 16
+    new-instance v0, Ljava/lang/ThreadLocal;
+
+    invoke-direct {v0}, Ljava/lang/ThreadLocal;-><init>()V
+
+    sput-object v0, Lcc/ioctl/tmoe/startup/ModernPreferences;->TEST_OVERRIDES:Ljava/lang/ThreadLocal;
+
+    return-void
+.end method
+
 .method private constructor <init>()V
     .locals 0
 
@@ -13,10 +40,52 @@
     return-void
 .end method
 
+.method public static clearTestOverrides()V
+    .locals 1
+
+    .line 22
+    sget-object v0, Lcc/ioctl/tmoe/startup/ModernPreferences;->TEST_OVERRIDES:Ljava/lang/ThreadLocal;
+
+    invoke-virtual {v0}, Ljava/lang/ThreadLocal;->remove()V
+
+    return-void
+.end method
+
 .method public static isEnabled(Ljava/lang/String;)Z
     .locals 3
 
-    .line 18
+    .line 24
+    sget-object v0, Lcc/ioctl/tmoe/startup/ModernPreferences;->TEST_OVERRIDES:Ljava/lang/ThreadLocal;
+
+    invoke-virtual {v0}, Ljava/lang/ThreadLocal;->get()Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Ljava/util/Map;
+
+    .line 25
+    if-eqz v0, :cond_0
+
+    invoke-interface {v0, p0}, Ljava/util/Map;->containsKey(Ljava/lang/Object;)Z
+
+    move-result v1
+
+    if-eqz v1, :cond_0
+
+    invoke-interface {v0, p0}, Ljava/util/Map;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object p0
+
+    check-cast p0, Ljava/lang/Boolean;
+
+    invoke-virtual {p0}, Ljava/lang/Boolean;->booleanValue()Z
+
+    move-result p0
+
+    return p0
+
+    .line 27
+    :cond_0
     const/4 v0, 0x0
 
     :try_start_0
@@ -24,8 +93,8 @@
 
     move-result-object v1
 
-    .line 19
-    if-eqz v1, :cond_0
+    .line 28
+    if-eqz v1, :cond_1
 
     new-instance v2, Ljava/lang/StringBuilder;
 
@@ -51,25 +120,25 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    if-eqz p0, :cond_0
+    if-eqz p0, :cond_1
 
     const/4 v0, 0x1
 
-    :cond_0
+    :cond_1
     return v0
 
-    .line 20
+    .line 29
     :catchall_0
     move-exception p0
 
-    .line 21
+    .line 30
     const-string v1, "TMoe-UI"
 
     const-string v2, "Modern preference read failed"
 
     invoke-static {v1, v2, p0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 22
+    .line 31
     return v0
 .end method
 
@@ -104,7 +173,7 @@
 .method public static selfTest()Ljava/lang/String;
     .locals 8
 
-    .line 28
+    .line 37
     const-string v0, "TMoe-UI"
 
     :try_start_0
@@ -112,7 +181,7 @@
 
     move-result-object v1
 
-    .line 29
+    .line 38
     invoke-virtual {v1}, Landroid/app/Application;->getClassLoader()Ljava/lang/ClassLoader;
 
     move-result-object v1
@@ -123,7 +192,7 @@
 
     move-result-object v1
 
-    .line 30
+    .line 39
     const-string v2, "formatShortNumber"
 
     sget-object v3, Ljava/lang/Integer;->TYPE:Ljava/lang/Class;
@@ -138,15 +207,15 @@
 
     move-result-object v1
 
-    .line 31
+    .line 40
     const/4 v2, 0x1
 
     invoke-virtual {v1, v2}, Ljava/lang/reflect/Method;->setAccessible(Z)V
 
-    .line 32
+    .line 41
     new-array v3, v2, [I
 
-    .line 33
+    .line 42
     const/16 v4, 0x3039
 
     invoke-static {v4}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
@@ -167,7 +236,7 @@
 
     move-result-object v1
 
-    .line 34
+    .line 43
     const-string v5, "ChannelDetailNumbers"
 
     invoke-static {v5}, Lcc/ioctl/tmoe/startup/ModernPreferences;->isEnabled(Ljava/lang/String;)Z
@@ -176,7 +245,7 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 35
+    .line 44
     const-string v6, "12345"
 
     const/4 v7, 0x0
@@ -209,7 +278,7 @@
     :cond_1
     move v2, v7
 
-    .line 36
+    .line 45
     :goto_1
     new-instance v3, Ljava/lang/StringBuilder;
 
@@ -259,7 +328,7 @@
 
     move-result-object v1
 
-    .line 37
+    .line 46
     new-instance v2, Ljava/lang/StringBuilder;
 
     invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -282,19 +351,19 @@
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
-    .line 38
+    .line 47
     return-object v1
 
-    .line 39
+    .line 48
     :catchall_0
     move-exception v1
 
-    .line 40
+    .line 49
     const-string v2, "SELF_TEST failed"
 
     invoke-static {v0, v2, v1}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 41
+    .line 50
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -327,7 +396,7 @@
 .method public static setEnabled(Ljava/lang/String;Z)Z
     .locals 3
 
-    .line 46
+    .line 55
     const/4 v0, 0x0
 
     :try_start_0
@@ -335,7 +404,7 @@
 
     move-result-object v1
 
-    .line 47
+    .line 56
     if-eqz v1, :cond_0
 
     invoke-interface {v1}, Landroid/content/SharedPreferences;->edit()Landroid/content/SharedPreferences$Editor;
@@ -377,17 +446,52 @@
     :cond_0
     return v0
 
-    .line 48
+    .line 57
     :catchall_0
     move-exception p0
 
-    .line 49
+    .line 58
     const-string p1, "TMoe-UI"
 
     const-string v1, "Modern preference write failed"
 
     invoke-static {p1, v1, p0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 50
+    .line 59
     return v0
+.end method
+
+.method public static setTestOverride(Ljava/lang/String;Z)V
+    .locals 2
+
+    .line 18
+    sget-object v0, Lcc/ioctl/tmoe/startup/ModernPreferences;->TEST_OVERRIDES:Ljava/lang/ThreadLocal;
+
+    invoke-virtual {v0}, Ljava/lang/ThreadLocal;->get()Ljava/lang/Object;
+
+    move-result-object v0
+
+    check-cast v0, Ljava/util/Map;
+
+    .line 19
+    if-nez v0, :cond_0
+
+    new-instance v0, Ljava/util/HashMap;
+
+    invoke-direct {v0}, Ljava/util/HashMap;-><init>()V
+
+    sget-object v1, Lcc/ioctl/tmoe/startup/ModernPreferences;->TEST_OVERRIDES:Ljava/lang/ThreadLocal;
+
+    invoke-virtual {v1, v0}, Ljava/lang/ThreadLocal;->set(Ljava/lang/Object;)V
+
+    .line 20
+    :cond_0
+    invoke-static {p1}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+
+    move-result-object p1
+
+    invoke-interface {v0, p0, p1}, Ljava/util/Map;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 21
+    return-void
 .end method
