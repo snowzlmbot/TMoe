@@ -24,6 +24,7 @@ public final class VerificationRunner {
                 KeyguardManager guard=a.getSystemService(KeyguardManager.class);
                 if(guard!=null&&guard.isKeyguardLocked()){Log.w("TMoe-Verification","explicit test refused while locked");return;}
                 if(nonce.startsWith("profile-live:"))ProfileLiveTest.openAndTest(a);
+                else if(nonce.startsWith("source-ui:"))SourceUiTest.run(a);
                 else Log.i("TMoe-TEST",ModernRuntimeTests.run(a));
             },800);
             return result;

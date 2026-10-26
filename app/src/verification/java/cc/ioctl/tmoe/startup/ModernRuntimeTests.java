@@ -40,6 +40,25 @@ public final class ModernRuntimeTests {
     public static String run(Activity activity){
         JSONObject report=new JSONObject();JSONArray rows=new JSONArray();
         try{report.put("time",System.currentTimeMillis());report.put("host",activity.getPackageName());report.put("version_code",72299);report.put("test_scope","real hooked host methods, fabricated local data; no message sends/downloads; user switches unchanged");report.put("hook_failures",ModernFeatureHooks.failures());}catch(Exception ignored){}
+        test(rows,"feature_target_health",()->{
+            String[] keys={"ShowIdInProfile","ProhibitUpdates","AntiAntiForward","HideSponsoredMsg","ProhibitSpoilers","ForceBlurChatAvailable","ChannelDetailNumbers","DisablePremiumStickerAnimation","ProhibitEnableReactions","HidePremiumStickerSetTab","ProhibitChatGreetings","KeepVideoMuted","ProhibitChannelSwitching"};
+            for(String key:keys)require(ModernFeatureCatalog.available(key),key+": "+ModernFeatureCatalog.summary(key));
+            require(ModernFeatureCatalog.errors().equals("{}"),ModernFeatureCatalog.errors());return "13 feature families fully resolved; hook-registration health only, separate from behavior cases";
+        });
+        test(rows,"source_dynamic_fragment_verifier",()->{
+            Object proxy=new cc.ioctl.tmoe.fragment.ModernSettingsFragment().getProxyObject();
+            require(c("org.telegram.ui.ActionBar.r2").isInstance(proxy),"source proxy is not host BaseFragment");
+            proxy.getClass().getMethod("startActivityForResult$super",android.content.Intent.class,int.class);
+            proxy.getClass().getMethod("onRequestPermissionsResultFragment",int.class,String[].class,int[].class);
+            return "source-generated DEX instantiated; object+primitive and array callback descriptors verified by ART";
+        });
+        test(rows,"video_volume_autoplay_boundary",()->{
+            try(VerificationVideoFixture fixture=new VerificationVideoFixture(activity)){
+                enabled("KeepVideoMuted",false);Object off=fixture.invoke();require(Boolean.TRUE.equals(off)&&fixture.playbackCalls==1,"original video path never reached playMessage");
+                enabled("KeepVideoMuted",true);Object on=fixture.invoke();require(Boolean.FALSE.equals(on)&&fixture.playbackCalls==1,"enabled still entered video playback");
+                enabled("KeepVideoMuted",false);Object restored=fixture.invoke();require(Boolean.TRUE.equals(restored)&&fixture.playbackCalls==2,"video path did not restore");return "actual ko.R9 -> MediaController.playMessage sink 1->0->1; no audio/video file played";
+            }
+        });
         test(rows,"exact_numbers",()->{
             Method m=method("org.telegram.messenger.LocaleController","formatShortNumber",int.class,int[].class);
             enabled("ChannelDetailNumbers",false);Object off=call(m,null,12345,new int[1]);

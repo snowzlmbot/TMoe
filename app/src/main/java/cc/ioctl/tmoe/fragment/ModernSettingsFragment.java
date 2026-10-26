@@ -69,7 +69,7 @@ public final class ModernSettingsFragment extends BaseProxyFragment {
         }
         TextView note=text(c,"兼容性说明\n原设置页中仍依赖传统 API 的功能暂不显示。抽屉手机号及其他旧API功能仍需单独适配；用户ID功能使用新的原生资料行实现。\n\n修改后若界面仍显示缓存结果，返回后重新打开聊天，或重启 Telegram。无需退出账号。",14,secondary);note.setPadding(dp(c,10),dp(c,24),dp(c,10),dp(c,20));body.addView(note);
         if(BuildConfig.VERIFICATION_ENABLED){
-            TextView test=text(c,"运行真实功能差分测试（验证版）",16,Color.rgb(87,150,245));test.setPadding(dp(c,10),dp(c,18),dp(c,10),dp(c,18));test.setOnClickListener(v->{try{String result=(String)Class.forName("cc.ioctl.tmoe.startup.ModernRuntimeTests").getMethod("run",android.app.Activity.class).invoke(null,getParentActivity());Toast.makeText(c,result,Toast.LENGTH_LONG).show();}catch(Throwable e){android.util.Log.e("TMoe-Verification","run tests",e);Toast.makeText(c,"验证异常，请查看日志",Toast.LENGTH_LONG).show();}});body.addView(test);
+            TextView test=text(c,"运行真实功能差分测试（验证版）",16,Color.rgb(87,150,245));test.setPadding(dp(c,10),dp(c,18),dp(c,10),dp(c,18));test.setOnClickListener(v->{try{String result=cc.ioctl.tmoe.startup.ModernVerification.run(getParentActivity());Toast.makeText(c,result,Toast.LENGTH_LONG).show();}catch(Throwable e){android.util.Log.e("TMoe-Verification","run tests",e);Toast.makeText(c,"验证异常，请查看日志",Toast.LENGTH_LONG).show();}});body.addView(test);
             TextView testResult=text(c,"验证版调用宿主真实方法，分开记录方法级与界面级证据；生产版不包含这些测试类。",13,secondary);testResult.setPadding(dp(c,10),0,dp(c,10),dp(c,12));body.addView(testResult);
         }
         setFragmentView(root);

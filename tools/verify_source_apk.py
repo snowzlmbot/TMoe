@@ -2,7 +2,7 @@
 """Static acceptance for the source-built production artifact."""
 import argparse,hashlib,struct,zipfile,zlib
 p=argparse.ArgumentParser();p.add_argument('apk');a=p.parse_args()
-forbidden=[b'Lcc/ioctl/tmoe/startup/ModernRuntimeTests;',b'Lcc/ioctl/tmoe/startup/ProfileLiveTest;',b'Lcc/ioctl/tmoe/startup/VerificationRunner;',b'tmoe_selftest_nonce']
+forbidden=[b'Lcc/ioctl/tmoe/startup/ModernRuntimeTests;',b'Lcc/ioctl/tmoe/startup/ProfileLiveTest;',b'Lcc/ioctl/tmoe/startup/VerificationRunner;',b'tmoe_selftest_nonce',b'cc.ioctl.tmoe.startup.ModernRuntimeTests',b'cc.ioctl.tmoe.startup.ProfileLiveTest',b'Lcc/ioctl/tmoe/startup/SourceUiTest;',b'Lcc/ioctl/tmoe/startup/VerificationNetworkSink;',b'Lcc/ioctl/tmoe/startup/VerificationVideoFixture;']
 required=[b'Lcc/ioctl/tmoe/startup/ModernHookEntry;',b'Lcc/ioctl/tmoe/startup/ModernFeatureHooks;',b'Lcc/ioctl/tmoe/startup/ModernProfileIds;',b'Lcc/ioctl/tmoe/startup/ModernPaidReactionGuard;']
 with zipfile.ZipFile(a.apk) as z:
  assert z.read('META-INF/xposed/java_init.list').strip()==b'cc.ioctl.tmoe.startup.ModernHookEntry'
