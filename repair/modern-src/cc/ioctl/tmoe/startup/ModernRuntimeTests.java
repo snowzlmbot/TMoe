@@ -175,6 +175,36 @@ public final class ModernRuntimeTests {
             enabled("ProhibitChannelSwitching",false);Object off=call(m,helper);enabled("ProhibitChannelSwitching",true);Object on=call(m,helper);
             require(Boolean.TRUE.equals(off)&&Boolean.FALSE.equals(on),"channel panel unchanged");return off+" -> "+on;
         });
+        test(rows,"profile_id_long_user_chat_topic",()->{
+            Object profile=raw("org.telegram.ui.ProfileActivity");
+            set(profile,"e1",6387654321L);set(profile,"f1",9988776655L);set(profile,"g1",12345678901L);
+            require("6387654321".equals(ModernProfileIds.id(profile)),"64-bit user ID lost priority or precision");
+            set(profile,"e1",0L);require("9988776655/12345678901".equals(ModernProfileIds.id(profile)),"chat/topic mapping wrong");
+            set(profile,"g1",0L);set(profile,"i1",987654321L);require("9988776655".equals(ModernProfileIds.id(profile)),"dialog ID leaked into raw chat ID");
+            set(profile,"f1",0L);require(ModernProfileIds.id(profile)==null,"zero ID should not be shown");
+            return "64-bit user first; raw chat/topic correct; dialog ID ignored; zero hidden";
+        });
+        test(rows,"profile_id_native_adapter_pipeline",()->{
+            Object profile=raw("org.telegram.ui.ProfileActivity");set(profile,"e1",6387654321L);set(profile,"N2",8);
+            Field names=ModernProfileIds.class.getDeclaredField("ROW_FIELDS");names.setAccessible(true);
+            for(String name:(String[])names.get(null))set(profile,name,-1);
+            set(profile,"f3",2);set(profile,"e3",1);set(profile,"P2",0);set(profile,"N3",7);
+            Object adapter=c("org.telegram.ui.i11").getDeclaredConstructor(c("org.telegram.ui.ProfileActivity"),android.content.Context.class).newInstance(profile,activity);
+            enabled("ShowIdInProfile",false);ModernProfileIds.insertAfterRebuild(profile);require(((Number)get(profile,"N2")).intValue()==8,"disabled ID changed count");
+            enabled("ShowIdInProfile",true);ModernProfileIds.insertAfterRebuild(profile);ModernProfileIds.Row row=ModernProfileIds.rowForAdapter(adapter);
+            require(row!=null&&row.index==2&&((Number)get(profile,"N2")).intValue()==9,"row insertion/count mismatch");
+            require(((Number)get(profile,"f3")).intValue()==3&&((Number)get(profile,"N3")).intValue()==8&&((Number)get(profile,"P2")).intValue()==0,"native row positions not preserved");
+            Method count=method("org.telegram.ui.i11","h"),type=method("org.telegram.ui.i11","j",int.class);
+            require(((Number)call(count,adapter)).intValue()==9&&((Number)call(type,adapter,2)).intValue()==ModernProfileIds.VIEW_TYPE,"adapter not wired to ID row");
+            Method create=method("org.telegram.ui.i11","x",android.view.ViewGroup.class,int.class);Object holder=call(create,adapter,new FrameLayout(activity),ModernProfileIds.VIEW_TYPE);
+            set(holder,"f",ModernProfileIds.VIEW_TYPE);
+            Method bind=method("org.telegram.ui.i11","v",c("n4.h1"),int.class);call(bind,adapter,holder,2);
+            View cell=(View)get(holder,"a");require(cell.getContentDescription()!=null&&cell.getContentDescription().toString().contains("6387654321"),"real native cell did not show ID");
+            require(Boolean.TRUE.equals(call(method("org.telegram.ui.i11","D",c("n4.h1")),adapter,holder)),"ID row not enabled for click");
+            android.util.SparseIntArray sparse=new android.util.SparseIntArray();Object diff=c("org.telegram.ui.w01").getDeclaredConstructor(c("org.telegram.ui.ProfileActivity")).newInstance(profile);
+            call(method("org.telegram.ui.w01","f",android.util.SparseIntArray.class),diff,sparse);require(sparse.get(2)==ModernProfileIds.DIFF_KEY,"ID missing from native diff snapshot");
+            return "count8->9; only later row indexes shift; native c9 cell bound; unique viewType; enabled; stable diff key; no clipboard writes";
+        });
         // Other environment-dependent behavior is explicitly not certified by this suite.
         try{
             report.put("tests",rows);report.put("not_end_to_end_tested",new JSONArray().put("video with real audio playback").put("live sponsored ad from server").put("greeting sticker in a real empty chat"));

@@ -16,6 +16,7 @@ import cc.ioctl.tmoe.startup.ModernPreferences;
 /** Native settings screen for verified API102 hook targets. No legacy hook singletons. */
 public final class ModernSettingsFragment extends BaseProxyFragment {
     private static final String[][] OPTIONS = {
+        {"ShowIdInProfile", "显示用户ID", "在个人资料页加入用户/群组/频道ID；点按该行复制"},
         {"ProhibitUpdates", "禁止更新", "屏蔽应用内更新弹窗、强制更新页和底部提示条，并移除44dp占位；关闭恢复原逻辑"},
         {"AntiAntiForward", "解除复制保存消息限制", "控制转发及受限媒体判定；请尊重内容作者权限"},
         {"HideSponsoredMsg", "隐藏赞助消息", "拦截模型与聊天页广告插入入口；不保证清除已缓存广告"},
@@ -64,7 +65,7 @@ public final class ModernSettingsFragment extends BaseProxyFragment {
             TextView detail=text(c,option[2],13,secondary);detail.setPadding(dp(c,10),0,dp(c,10),dp(c,12));body.addView(detail);
             View line=new View(c);line.setBackgroundColor(dark?0xff303947:0xffdce2ec);body.addView(line,new LinearLayout.LayoutParams(-1,dp(c,1)));
         }
-        TextView note=text(c,"兼容性说明\n原设置页中仍依赖传统 API 的功能暂不显示。显示ID、抽屉手机号及其他旧API功能仍需单独适配，不在本页标为可用。\n\n修改后若界面仍显示缓存结果，返回后重新打开聊天，或重启 Telegram。无需退出账号。",14,secondary);note.setPadding(dp(c,10),dp(c,24),dp(c,10),dp(c,20));body.addView(note);
+        TextView note=text(c,"兼容性说明\n原设置页中仍依赖传统 API 的功能暂不显示。抽屉手机号及其他旧API功能仍需单独适配；用户ID功能使用新的原生资料行实现。\n\n修改后若界面仍显示缓存结果，返回后重新打开聊天，或重启 Telegram。无需退出账号。",14,secondary);note.setPadding(dp(c,10),dp(c,24),dp(c,10),dp(c,20));body.addView(note);
         TextView test=text(c,"运行真实功能差分测试",16,Color.rgb(87,150,245));test.setPadding(dp(c,10),dp(c,18),dp(c,10),dp(c,18));test.setOnClickListener(v->{String result=cc.ioctl.tmoe.startup.ModernRuntimeTests.run((android.app.Activity)c);Toast.makeText(c,result,Toast.LENGTH_LONG).show();});body.addView(test);
         TextView testResult=text(c,"测试调用Telegram真实方法，对比关闭/开启/恢复结果；使用临时线程配置，不改用户开关、不发送消息、不下载更新。它不代表真实视频播放和服务器广告已全部端到端验收。",13,secondary);testResult.setPadding(dp(c,10),0,dp(c,10),dp(c,12));body.addView(testResult);
         setFragmentView(root);

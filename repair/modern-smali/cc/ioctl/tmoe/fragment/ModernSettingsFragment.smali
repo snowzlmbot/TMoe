@@ -9,9 +9,19 @@
 
 # direct methods
 .method static constructor <clinit>()V
-    .locals 15
+    .locals 16
 
     .line 18
+    const-string v0, "\u663e\u793a\u7528\u6237ID"
+
+    const-string v1, "\u5728\u4e2a\u4eba\u8d44\u6599\u9875\u52a0\u5165\u7528\u6237/\u7fa4\u7ec4/\u9891\u9053ID\uff1b\u70b9\u6309\u8be5\u884c\u590d\u5236"
+
+    const-string v2, "ShowIdInProfile"
+
+    filled-new-array {v2, v0, v1}, [Ljava/lang/String;
+
+    move-result-object v3
+
     const-string v0, "\u7981\u6b62\u66f4\u65b0"
 
     const-string v1, "\u5c4f\u853d\u5e94\u7528\u5185\u66f4\u65b0\u5f39\u7a97\u3001\u5f3a\u5236\u66f4\u65b0\u9875\u548c\u5e95\u90e8\u63d0\u793a\u6761\uff0c\u5e76\u79fb\u966444dp\u5360\u4f4d\uff1b\u5173\u95ed\u6062\u590d\u539f\u903b\u8f91"
@@ -20,7 +30,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v3
+    move-result-object v4
 
     const-string v0, "\u89e3\u9664\u590d\u5236\u4fdd\u5b58\u6d88\u606f\u9650\u5236"
 
@@ -30,7 +40,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v4
+    move-result-object v5
 
     const-string v0, "\u9690\u85cf\u8d5e\u52a9\u6d88\u606f"
 
@@ -40,7 +50,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v5
+    move-result-object v6
 
     const-string v0, "\u7981\u7528\u5267\u900f"
 
@@ -50,7 +60,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v6
+    move-result-object v7
 
     const-string v0, "\u5141\u8bb8\u9876\u680f\u6a21\u7cca"
 
@@ -60,7 +70,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v7
+    move-result-object v8
 
     const-string v0, "\u663e\u793a\u7cbe\u786e\u4eba\u6570"
 
@@ -70,7 +80,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v8
+    move-result-object v9
 
     const-string v0, "\u7981\u7528\u4f1a\u5458\u8d34\u7eb8\u7279\u6548"
 
@@ -80,7 +90,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v9
+    move-result-object v10
 
     const-string v0, "\u7981\u6b62\u8868\u60c5\u56de\u5e94"
 
@@ -90,7 +100,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v10
+    move-result-object v11
 
     const-string v0, "\u9690\u85cf\u4f1a\u5458\u8d34\u7eb8\u5305"
 
@@ -100,7 +110,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v11
+    move-result-object v12
 
     const-string v0, "\u7981\u7528\u95ee\u5019\u8d34\u7eb8"
 
@@ -110,7 +120,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v12
+    move-result-object v13
 
     const-string v0, "\u4fdd\u6301\u53ef\u89c1\u89c6\u9891\u9759\u97f3"
 
@@ -120,7 +130,7 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v13
+    move-result-object v14
 
     const-string v0, "\u7981\u6b62\u6ed1\u52a8\u5207\u6362\u9891\u9053"
 
@@ -130,9 +140,9 @@
 
     filled-new-array {v2, v0, v1}, [Ljava/lang/String;
 
-    move-result-object v14
+    move-result-object v15
 
-    filled-new-array/range {v3 .. v14}, [[Ljava/lang/String;
+    filled-new-array/range {v3 .. v15}, [[Ljava/lang/String;
 
     move-result-object v0
 
@@ -153,13 +163,13 @@
 .method private back()V
     .locals 4
 
-    .line 39
+    .line 40
     :try_start_0
     invoke-virtual {p0}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->getProxyObject()Ljava/lang/Object;
 
     move-result-object v0
 
-    .line 40
+    .line 41
     invoke-virtual {v0}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
 
     move-result-object v1
@@ -176,7 +186,7 @@
 
     move-result-object v1
 
-    .line 41
+    .line 42
     const/4 v2, 0x1
 
     invoke-static {v2}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
@@ -191,7 +201,7 @@
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_0
 
-    .line 42
+    .line 43
     goto :goto_0
 
     :catchall_0
@@ -203,7 +213,7 @@
 
     invoke-static {v1, v2, v0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 43
+    .line 44
     :goto_0
     return-void
 .end method
@@ -211,7 +221,7 @@
 .method private dp(Landroid/content/Context;I)I
     .locals 0
 
-    .line 32
+    .line 33
     int-to-float p2, p2
 
     invoke-virtual {p1}, Landroid/content/Context;->getResources()Landroid/content/res/Resources;
@@ -236,7 +246,7 @@
 .method static synthetic lambda$onCreateView$1(Ljava/lang/String;Landroid/content/Context;Landroid/widget/CompoundButton;Z)V
     .locals 0
 
-    .line 60
+    .line 61
     invoke-static {p0, p3}, Lcc/ioctl/tmoe/startup/ModernPreferences;->setEnabled(Ljava/lang/String;Z)Z
 
     move-result p2
@@ -255,7 +265,7 @@
 
     goto :goto_0
 
-    .line 61
+    .line 62
     :cond_0
     new-instance p1, Ljava/lang/StringBuilder;
 
@@ -291,7 +301,7 @@
 
     invoke-static {p0}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->onToggleChanged(Ljava/lang/String;)V
 
-    .line 62
+    .line 63
     :goto_0
     return-void
 .end method
@@ -299,7 +309,7 @@
 .method static synthetic lambda$onCreateView$2(Landroid/content/Context;Landroid/view/View;)V
     .locals 1
 
-    .line 68
+    .line 69
     move-object p1, p0
 
     check-cast p1, Landroid/app/Activity;
@@ -322,7 +332,7 @@
 .method private text(Landroid/content/Context;Ljava/lang/String;II)Landroid/widget/TextView;
     .locals 1
 
-    .line 34
+    .line 35
     new-instance v0, Landroid/widget/TextView;
 
     invoke-direct {v0, p1}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
@@ -343,7 +353,7 @@
 .method synthetic lambda$onCreateView$0$cc-ioctl-tmoe-fragment-ModernSettingsFragment(Landroid/view/View;)V
     .locals 0
 
-    .line 51
+    .line 52
     invoke-direct {p0}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->back()V
 
     return-void
@@ -352,7 +362,7 @@
 .method public onCreateView(Landroid/content/Context;)Landroid/view/View;
     .locals 18
 
-    .line 45
+    .line 46
     move-object/from16 v0, p0
 
     move-object/from16 v1, p1
@@ -384,7 +394,7 @@
     :cond_0
     move v2, v4
 
-    .line 46
+    .line 47
     :goto_0
     if-eqz v2, :cond_1
 
@@ -403,7 +413,7 @@
 
     move-result v7
 
-    .line 47
+    .line 48
     :goto_1
     if-eqz v2, :cond_2
 
@@ -427,7 +437,7 @@
 
     move-result v8
 
-    .line 48
+    .line 49
     const/16 v9, 0x12
 
     if-eqz v2, :cond_3
@@ -451,7 +461,7 @@
 
     move-result v5
 
-    .line 49
+    .line 50
     :goto_3
     new-instance v10, Landroid/widget/LinearLayout;
 
@@ -461,7 +471,7 @@
 
     invoke-virtual {v10, v5}, Landroid/widget/LinearLayout;->setBackgroundColor(I)V
 
-    .line 50
+    .line 51
     new-instance v5, Landroid/widget/LinearLayout;
 
     invoke-direct {v5, v1}, Landroid/widget/LinearLayout;-><init>(Landroid/content/Context;)V
@@ -490,7 +500,7 @@
 
     invoke-virtual {v5, v12, v13, v15, v6}, Landroid/widget/LinearLayout;->setPadding(IIII)V
 
-    .line 51
+    .line 52
     const-string v6, "\u2039 \u8fd4\u56de"
 
     const/16 v12, 0x57
@@ -539,7 +549,7 @@
 
     invoke-virtual {v5, v6}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 52
+    .line 53
     const-string v6, "TMoe \u8bbe\u7f6e \u00b7 API102"
 
     const/16 v9, 0x14
@@ -564,10 +574,10 @@
 
     invoke-virtual {v5, v6, v12}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 53
+    .line 54
     invoke-virtual {v10, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 54
+    .line 55
     new-instance v5, Landroid/widget/ScrollView;
 
     invoke-direct {v5, v1}, Landroid/widget/ScrollView;-><init>(Landroid/content/Context;)V
@@ -608,7 +618,7 @@
 
     invoke-virtual {v10, v5, v9}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 55
+    .line 56
     const-string v5, "Telegram 13.1.0 / 72299 \u00b7 LSPosed API102\n\u4e0b\u5217\u5f00\u5173\u4f7f\u7528\u73b0\u4ee3 API\uff0c\u4e0d\u52a0\u8f7d\u4f20\u7edf Xposed Hook \u7c7b\u3002\u914d\u7f6e\u4fdd\u5b58\u5728 Telegram \u6c99\u76d2\u5185\uff0c\u66f4\u65b0\u6a21\u5757\u4e0d\u4f1a\u6e05\u9664\u3002"
 
     const/16 v9, 0xe
@@ -627,7 +637,7 @@
 
     invoke-virtual {v6, v5}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 56
+    .line 57
     sget-object v5, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->OPTIONS:[[Ljava/lang/String;
 
     array-length v12, v5
@@ -641,10 +651,10 @@
 
     aget-object v17, v5, v13
 
-    .line 57
+    .line 58
     aget-object v9, v17, v4
 
-    .line 58
+    .line 59
     new-instance v4, Landroid/widget/Switch;
 
     invoke-direct {v4, v1}, Landroid/widget/Switch;-><init>(Landroid/content/Context;)V
@@ -695,14 +705,14 @@
 
     invoke-virtual {v4, v3}, Landroid/widget/Switch;->setChecked(Z)V
 
-    .line 59
+    .line 60
     new-instance v3, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment$$ExternalSyntheticLambda1;
 
     invoke-direct {v3, v9, v1}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment$$ExternalSyntheticLambda1;-><init>(Ljava/lang/String;Landroid/content/Context;)V
 
     invoke-virtual {v4, v3}, Landroid/widget/Switch;->setOnCheckedChangeListener(Landroid/widget/CompoundButton$OnCheckedChangeListener;)V
 
-    .line 63
+    .line 64
     new-instance v3, Landroid/widget/LinearLayout$LayoutParams;
 
     const/4 v5, -0x2
@@ -713,7 +723,7 @@
 
     invoke-virtual {v6, v4, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 64
+    .line 65
     const/4 v3, 0x2
 
     aget-object v3, v17, v3
@@ -746,7 +756,7 @@
 
     invoke-virtual {v6, v3}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 65
+    .line 66
     new-instance v3, Landroid/view/View;
 
     invoke-direct {v3, v1}, Landroid/view/View;-><init>(Landroid/content/Context;)V
@@ -777,7 +787,7 @@
 
     invoke-virtual {v6, v3, v4}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
 
-    .line 56
+    .line 57
     add-int/lit8 v13, v13, 0x1
 
     move v3, v5
@@ -792,9 +802,9 @@
 
     goto/16 :goto_4
 
-    .line 67
+    .line 68
     :cond_5
-    const-string v2, "\u517c\u5bb9\u6027\u8bf4\u660e\n\u539f\u8bbe\u7f6e\u9875\u4e2d\u4ecd\u4f9d\u8d56\u4f20\u7edf API \u7684\u529f\u80fd\u6682\u4e0d\u663e\u793a\u3002\u663e\u793aID\u3001\u62bd\u5c49\u624b\u673a\u53f7\u53ca\u5176\u4ed6\u65e7API\u529f\u80fd\u4ecd\u9700\u5355\u72ec\u9002\u914d\uff0c\u4e0d\u5728\u672c\u9875\u6807\u4e3a\u53ef\u7528\u3002\n\n\u4fee\u6539\u540e\u82e5\u754c\u9762\u4ecd\u663e\u793a\u7f13\u5b58\u7ed3\u679c\uff0c\u8fd4\u56de\u540e\u91cd\u65b0\u6253\u5f00\u804a\u5929\uff0c\u6216\u91cd\u542f Telegram\u3002\u65e0\u9700\u9000\u51fa\u8d26\u53f7\u3002"
+    const-string v2, "\u517c\u5bb9\u6027\u8bf4\u660e\n\u539f\u8bbe\u7f6e\u9875\u4e2d\u4ecd\u4f9d\u8d56\u4f20\u7edf API \u7684\u529f\u80fd\u6682\u4e0d\u663e\u793a\u3002\u62bd\u5c49\u624b\u673a\u53f7\u53ca\u5176\u4ed6\u65e7API\u529f\u80fd\u4ecd\u9700\u5355\u72ec\u9002\u914d\uff1b\u7528\u6237ID\u529f\u80fd\u4f7f\u7528\u65b0\u7684\u539f\u751f\u8d44\u6599\u884c\u5b9e\u73b0\u3002\n\n\u4fee\u6539\u540e\u82e5\u754c\u9762\u4ecd\u663e\u793a\u7f13\u5b58\u7ed3\u679c\uff0c\u8fd4\u56de\u540e\u91cd\u65b0\u6253\u5f00\u804a\u5929\uff0c\u6216\u91cd\u542f Telegram\u3002\u65e0\u9700\u9000\u51fa\u8d26\u53f7\u3002"
 
     const/16 v3, 0xe
 
@@ -828,7 +838,7 @@
 
     invoke-virtual {v6, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 68
+    .line 69
     const-string v2, "\u8fd0\u884c\u771f\u5b9e\u529f\u80fd\u5dee\u5206\u6d4b\u8bd5"
 
     const/16 v4, 0xf5
@@ -875,7 +885,7 @@
 
     invoke-virtual {v6, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 69
+    .line 70
     const-string v2, "\u6d4b\u8bd5\u8c03\u7528Telegram\u771f\u5b9e\u65b9\u6cd5\uff0c\u5bf9\u6bd4\u5173\u95ed/\u5f00\u542f/\u6062\u590d\u7ed3\u679c\uff1b\u4f7f\u7528\u4e34\u65f6\u7ebf\u7a0b\u914d\u7f6e\uff0c\u4e0d\u6539\u7528\u6237\u5f00\u5173\u3001\u4e0d\u53d1\u9001\u6d88\u606f\u3001\u4e0d\u4e0b\u8f7d\u66f4\u65b0\u3002\u5b83\u4e0d\u4ee3\u8868\u771f\u5b9e\u89c6\u9891\u64ad\u653e\u548c\u670d\u52a1\u5668\u5e7f\u544a\u5df2\u5168\u90e8\u7aef\u5230\u7aef\u9a8c\u6536\u3002"
 
     const/16 v4, 0xd
@@ -904,24 +914,24 @@
 
     invoke-virtual {v6, v2}, Landroid/widget/LinearLayout;->addView(Landroid/view/View;)V
 
-    .line 70
+    .line 71
     invoke-virtual {v0, v10}, Lcc/ioctl/tmoe/fragment/ModernSettingsFragment;->setFragmentView(Landroid/view/View;)V
 
-    .line 71
+    .line 72
     const-string v1, "TMoe-UI"
 
     const-string v2, "ModernSettingsFragment view created"
 
     invoke-static {v1, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 72
+    .line 73
     return-object v10
 .end method
 
 .method public onFragmentCreate()Z
     .locals 1
 
-    .line 36
+    .line 37
     const/4 v0, 0x1
 
     return v0

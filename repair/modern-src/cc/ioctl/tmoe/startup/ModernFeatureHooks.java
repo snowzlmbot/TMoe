@@ -50,6 +50,7 @@ public final class ModernFeatureHooks {
         loader=host;
         runtimeModule=module;
         registerSelfTestLifecycle(module);
+        ModernProfileIds.install(module,host);
         try{
             Class<?> app=cls("org.telegram.messenger.ApplicationLoader"), upd=cls("org.telegram.tgnet.TLRPC$TL_help_appUpdate");
             register(module,"org.telegram.messenger.SharedConfig","isAppUpdateAvailable","ProhibitUpdates",false);
@@ -187,6 +188,7 @@ public final class ModernFeatureHooks {
     public static void onToggleChanged(String name){
         if(name.equals("ProhibitEnableReactions")&&!ModernPreferences.isEnabled(name))synchronized(reactionViews){for(View v:new ArrayList<>(reactionViews.keySet()))restoreReaction(v);}
         if(name.equals("ProhibitChatGreetings")&&!ModernPreferences.isEnabled(name))synchronized(greetingViews){for(View v:new ArrayList<>(greetingViews.keySet()))restoreGreeting(v);}
+        if(name.equals("ShowIdInProfile"))ModernProfileIds.refresh();
         if(name.equals("ProhibitUpdates")){
             synchronized(updateLayouts){for(Object l:new ArrayList<>(updateLayouts.keySet()))try{if(ModernPreferences.isEnabled(name))removeUpdateStrip(l);else l.getClass().getMethod("updateAppUpdateViews",int.class,boolean.class).invoke(l,account(),false);}catch(Throwable e){Log.e("TMoe-UI","refresh update UI",e);}}
             synchronized(activities){for(Activity a:new ArrayList<>(activities.keySet())){if(ModernPreferences.isEnabled(name))hideMandatory(a);}}

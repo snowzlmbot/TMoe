@@ -126,7 +126,7 @@
         }
     .end annotation
 
-    .line 186
+    .line 216
     invoke-static {p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
 
     move-result-object p0
@@ -1467,9 +1467,9 @@
 
     move-result-object v11
 
-    new-instance v12, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda16;
+    new-instance v12, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda18;
 
-    invoke-direct {v12, v11}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda16;-><init>([I)V
+    invoke-direct {v12, v11}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda18;-><init>([I)V
 
     .line 168
     const-string v3, "org.telegram.messenger.MessageObject"
@@ -1684,6 +1684,702 @@
     move-result-object v0
 
     return-object v0
+.end method
+
+.method static synthetic lambda$run$17()Ljava/lang/String;
+    .locals 7
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/lang/Throwable;
+        }
+    .end annotation
+
+    .line 179
+    const-string v0, "org.telegram.ui.ProfileActivity"
+
+    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->raw(Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v0
+
+    .line 180
+    const-wide v1, 0x17cbbdeb1L
+
+    invoke-static {v1, v2}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v1
+
+    const-string v2, "e1"
+
+    invoke-static {v0, v2, v1}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const-wide v3, 0x25360a2cfL
+
+    invoke-static {v3, v4}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v1
+
+    const-string v3, "f1"
+
+    invoke-static {v0, v3, v1}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const-wide v4, 0x2dfdc1c35L
+
+    invoke-static {v4, v5}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v1
+
+    const-string v4, "g1"
+
+    invoke-static {v0, v4, v1}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    .line 181
+    const-string v1, "6387654321"
+
+    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernProfileIds;->id(Ljava/lang/Object;)Ljava/lang/String;
+
+    move-result-object v5
+
+    invoke-virtual {v1, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v1
+
+    const-string v5, "64-bit user ID lost priority or precision"
+
+    invoke-static {v1, v5}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 182
+    const-wide/16 v5, 0x0
+
+    invoke-static {v5, v6}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v1
+
+    invoke-static {v0, v2, v1}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const-string v2, "9988776655/12345678901"
+
+    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernProfileIds;->id(Ljava/lang/Object;)Ljava/lang/String;
+
+    move-result-object v5
+
+    invoke-virtual {v2, v5}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v2
+
+    const-string v5, "chat/topic mapping wrong"
+
+    invoke-static {v2, v5}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 183
+    invoke-static {v0, v4, v1}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const-wide/32 v4, 0x3ade68b1
+
+    invoke-static {v4, v5}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v2
+
+    const-string v4, "i1"
+
+    invoke-static {v0, v4, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const-string v2, "9988776655"
+
+    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernProfileIds;->id(Ljava/lang/Object;)Ljava/lang/String;
+
+    move-result-object v4
+
+    invoke-virtual {v2, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+
+    move-result v2
+
+    const-string v4, "dialog ID leaked into raw chat ID"
+
+    invoke-static {v2, v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 184
+    invoke-static {v0, v3, v1}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernProfileIds;->id(Ljava/lang/Object;)Ljava/lang/String;
+
+    move-result-object v0
+
+    if-nez v0, :cond_0
+
+    const/4 v0, 0x1
+
+    goto :goto_0
+
+    :cond_0
+    const/4 v0, 0x0
+
+    :goto_0
+    const-string v1, "zero ID should not be shown"
+
+    invoke-static {v0, v1}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 185
+    const-string v0, "64-bit user first; raw chat/topic correct; dialog ID ignored; zero hidden"
+
+    return-object v0
+.end method
+
+.method static synthetic lambda$run$18(Landroid/app/Activity;)Ljava/lang/String;
+    .locals 15
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/lang/Throwable;
+        }
+    .end annotation
+
+    .line 188
+    const-string v0, "org.telegram.ui.ProfileActivity"
+
+    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->raw(Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v1
+
+    const-wide v2, 0x17cbbdeb1L
+
+    invoke-static {v2, v3}, Ljava/lang/Long;->valueOf(J)Ljava/lang/Long;
+
+    move-result-object v2
+
+    const-string v3, "e1"
+
+    invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const/16 v2, 0x8
+
+    invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v3
+
+    const-string v4, "N2"
+
+    invoke-static {v1, v4, v3}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    .line 189
+    const-class v3, Lcc/ioctl/tmoe/startup/ModernProfileIds;
+
+    const-string v5, "ROW_FIELDS"
+
+    invoke-virtual {v3, v5}, Ljava/lang/Class;->getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;
+
+    move-result-object v3
+
+    const/4 v5, 0x1
+
+    invoke-virtual {v3, v5}, Ljava/lang/reflect/Field;->setAccessible(Z)V
+
+    .line 190
+    const/4 v6, 0x0
+
+    invoke-virtual {v3, v6}, Ljava/lang/reflect/Field;->get(Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v3
+
+    check-cast v3, [Ljava/lang/String;
+
+    array-length v6, v3
+
+    const/4 v7, 0x0
+
+    move v8, v7
+
+    :goto_0
+    if-ge v8, v6, :cond_0
+
+    aget-object v9, v3, v8
+
+    const/4 v10, -0x1
+
+    invoke-static {v10}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v10
+
+    invoke-static {v1, v9, v10}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    add-int/lit8 v8, v8, 0x1
+
+    goto :goto_0
+
+    .line 191
+    :cond_0
+    const/4 v3, 0x2
+
+    invoke-static {v3}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v6
+
+    const-string v8, "f3"
+
+    invoke-static {v1, v8, v6}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const-string v6, "e3"
+
+    invoke-static {v5}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v9
+
+    invoke-static {v1, v6, v9}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    invoke-static {v7}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v6
+
+    const-string v9, "P2"
+
+    invoke-static {v1, v9, v6}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const/4 v6, 0x7
+
+    invoke-static {v6}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v6
+
+    const-string v10, "N3"
+
+    invoke-static {v1, v10, v6}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    .line 192
+    const-string v6, "org.telegram.ui.i11"
+
+    invoke-static {v6}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v11
+
+    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v12
+
+    const-class v13, Landroid/content/Context;
+
+    filled-new-array {v12, v13}, [Ljava/lang/Class;
+
+    move-result-object v12
+
+    invoke-virtual {v11, v12}, Ljava/lang/Class;->getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+
+    move-result-object v11
+
+    filled-new-array {v1, p0}, [Ljava/lang/Object;
+
+    move-result-object v12
+
+    invoke-virtual {v11, v12}, Ljava/lang/reflect/Constructor;->newInstance([Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v11
+
+    .line 193
+    const-string v12, "ShowIdInProfile"
+
+    invoke-static {v12, v7}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->enabled(Ljava/lang/String;Z)V
+
+    invoke-static {v1}, Lcc/ioctl/tmoe/startup/ModernProfileIds;->insertAfterRebuild(Ljava/lang/Object;)V
+
+    invoke-static {v1, v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v13
+
+    check-cast v13, Ljava/lang/Number;
+
+    invoke-virtual {v13}, Ljava/lang/Number;->intValue()I
+
+    move-result v13
+
+    if-ne v13, v2, :cond_1
+
+    move v13, v5
+
+    goto :goto_1
+
+    :cond_1
+    move v13, v7
+
+    :goto_1
+    const-string v14, "disabled ID changed count"
+
+    invoke-static {v13, v14}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 194
+    invoke-static {v12, v5}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->enabled(Ljava/lang/String;Z)V
+
+    invoke-static {v1}, Lcc/ioctl/tmoe/startup/ModernProfileIds;->insertAfterRebuild(Ljava/lang/Object;)V
+
+    invoke-static {v11}, Lcc/ioctl/tmoe/startup/ModernProfileIds;->rowForAdapter(Ljava/lang/Object;)Lcc/ioctl/tmoe/startup/ModernProfileIds$Row;
+
+    move-result-object v12
+
+    .line 195
+    const/16 v13, 0x9
+
+    if-eqz v12, :cond_2
+
+    iget v12, v12, Lcc/ioctl/tmoe/startup/ModernProfileIds$Row;->index:I
+
+    if-ne v12, v3, :cond_2
+
+    invoke-static {v1, v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v4
+
+    check-cast v4, Ljava/lang/Number;
+
+    invoke-virtual {v4}, Ljava/lang/Number;->intValue()I
+
+    move-result v4
+
+    if-ne v4, v13, :cond_2
+
+    move v4, v5
+
+    goto :goto_2
+
+    :cond_2
+    move v4, v7
+
+    :goto_2
+    const-string v12, "row insertion/count mismatch"
+
+    invoke-static {v4, v12}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 196
+    invoke-static {v1, v8}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v4
+
+    check-cast v4, Ljava/lang/Number;
+
+    invoke-virtual {v4}, Ljava/lang/Number;->intValue()I
+
+    move-result v4
+
+    const/4 v8, 0x3
+
+    if-ne v4, v8, :cond_3
+
+    invoke-static {v1, v10}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v4
+
+    check-cast v4, Ljava/lang/Number;
+
+    invoke-virtual {v4}, Ljava/lang/Number;->intValue()I
+
+    move-result v4
+
+    if-ne v4, v2, :cond_3
+
+    invoke-static {v1, v9}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v2
+
+    check-cast v2, Ljava/lang/Number;
+
+    invoke-virtual {v2}, Ljava/lang/Number;->intValue()I
+
+    move-result v2
+
+    if-nez v2, :cond_3
+
+    move v2, v5
+
+    goto :goto_3
+
+    :cond_3
+    move v2, v7
+
+    :goto_3
+    const-string v4, "native row positions not preserved"
+
+    invoke-static {v2, v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 197
+    const-string v2, "h"
+
+    new-array v4, v7, [Ljava/lang/Class;
+
+    invoke-static {v6, v2, v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->method(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v2
+
+    sget-object v4, Ljava/lang/Integer;->TYPE:Ljava/lang/Class;
+
+    filled-new-array {v4}, [Ljava/lang/Class;
+
+    move-result-object v4
+
+    const-string v8, "j"
+
+    invoke-static {v6, v8, v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->method(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v4
+
+    .line 198
+    new-array v8, v7, [Ljava/lang/Object;
+
+    invoke-static {v2, v11, v8}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v2
+
+    check-cast v2, Ljava/lang/Number;
+
+    invoke-virtual {v2}, Ljava/lang/Number;->intValue()I
+
+    move-result v2
+
+    const v8, 0x544d4944
+
+    if-ne v2, v13, :cond_4
+
+    invoke-static {v3}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v2
+
+    filled-new-array {v2}, [Ljava/lang/Object;
+
+    move-result-object v2
+
+    invoke-static {v4, v11, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v2
+
+    check-cast v2, Ljava/lang/Number;
+
+    invoke-virtual {v2}, Ljava/lang/Number;->intValue()I
+
+    move-result v2
+
+    if-ne v2, v8, :cond_4
+
+    move v2, v5
+
+    goto :goto_4
+
+    :cond_4
+    move v2, v7
+
+    :goto_4
+    const-string v4, "adapter not wired to ID row"
+
+    invoke-static {v2, v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 199
+    const-class v2, Landroid/view/ViewGroup;
+
+    sget-object v4, Ljava/lang/Integer;->TYPE:Ljava/lang/Class;
+
+    filled-new-array {v2, v4}, [Ljava/lang/Class;
+
+    move-result-object v2
+
+    const-string v4, "x"
+
+    invoke-static {v6, v4, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->method(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v2
+
+    new-instance v4, Landroid/widget/FrameLayout;
+
+    invoke-direct {v4, p0}, Landroid/widget/FrameLayout;-><init>(Landroid/content/Context;)V
+
+    invoke-static {v8}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object p0
+
+    filled-new-array {v4, p0}, [Ljava/lang/Object;
+
+    move-result-object p0
+
+    invoke-static {v2, v11, p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object p0
+
+    .line 200
+    invoke-static {v8}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v2
+
+    const-string v4, "f"
+
+    invoke-static {p0, v4, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    .line 201
+    const-string v2, "n4.h1"
+
+    invoke-static {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v8
+
+    sget-object v9, Ljava/lang/Integer;->TYPE:Ljava/lang/Class;
+
+    filled-new-array {v8, v9}, [Ljava/lang/Class;
+
+    move-result-object v8
+
+    const-string v9, "v"
+
+    invoke-static {v6, v9, v8}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->method(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v8
+
+    invoke-static {v3}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v9
+
+    filled-new-array {p0, v9}, [Ljava/lang/Object;
+
+    move-result-object v9
+
+    invoke-static {v8, v11, v9}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 202
+    const-string v8, "a"
+
+    invoke-static {p0, v8}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->get(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v8
+
+    check-cast v8, Landroid/view/View;
+
+    invoke-virtual {v8}, Landroid/view/View;->getContentDescription()Ljava/lang/CharSequence;
+
+    move-result-object v9
+
+    if-eqz v9, :cond_5
+
+    invoke-virtual {v8}, Landroid/view/View;->getContentDescription()Ljava/lang/CharSequence;
+
+    move-result-object v8
+
+    invoke-interface {v8}, Ljava/lang/CharSequence;->toString()Ljava/lang/String;
+
+    move-result-object v8
+
+    const-string v9, "6387654321"
+
+    invoke-virtual {v8, v9}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
+
+    move-result v8
+
+    if-eqz v8, :cond_5
+
+    move v8, v5
+
+    goto :goto_5
+
+    :cond_5
+    move v8, v7
+
+    :goto_5
+    const-string v9, "real native cell did not show ID"
+
+    invoke-static {v8, v9}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 203
+    sget-object v8, Ljava/lang/Boolean;->TRUE:Ljava/lang/Boolean;
+
+    invoke-static {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v2
+
+    filled-new-array {v2}, [Ljava/lang/Class;
+
+    move-result-object v2
+
+    const-string v9, "D"
+
+    invoke-static {v6, v9, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->method(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v2
+
+    filled-new-array {p0}, [Ljava/lang/Object;
+
+    move-result-object p0
+
+    invoke-static {v2, v11, p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object p0
+
+    invoke-virtual {v8, p0}, Ljava/lang/Boolean;->equals(Ljava/lang/Object;)Z
+
+    move-result p0
+
+    const-string v2, "ID row not enabled for click"
+
+    invoke-static {p0, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 204
+    new-instance p0, Landroid/util/SparseIntArray;
+
+    invoke-direct {p0}, Landroid/util/SparseIntArray;-><init>()V
+
+    const-string v2, "org.telegram.ui.w01"
+
+    invoke-static {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v6
+
+    invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v0
+
+    filled-new-array {v0}, [Ljava/lang/Class;
+
+    move-result-object v0
+
+    invoke-virtual {v6, v0}, Ljava/lang/Class;->getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+
+    move-result-object v0
+
+    filled-new-array {v1}, [Ljava/lang/Object;
+
+    move-result-object v1
+
+    invoke-virtual {v0, v1}, Ljava/lang/reflect/Constructor;->newInstance([Ljava/lang/Object;)Ljava/lang/Object;
+
+    move-result-object v0
+
+    .line 205
+    const-class v1, Landroid/util/SparseIntArray;
+
+    filled-new-array {v1}, [Ljava/lang/Class;
+
+    move-result-object v1
+
+    invoke-static {v2, v4, v1}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->method(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v1
+
+    filled-new-array {p0}, [Ljava/lang/Object;
+
+    move-result-object v2
+
+    invoke-static {v1, v0, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+
+    invoke-virtual {p0, v3}, Landroid/util/SparseIntArray;->get(I)I
+
+    move-result p0
+
+    const v0, 0x544d4931
+
+    if-ne p0, v0, :cond_6
+
+    goto :goto_6
+
+    :cond_6
+    move v5, v7
+
+    :goto_6
+    const-string p0, "ID missing from native diff snapshot"
+
+    invoke-static {v5, p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+
+    .line 206
+    const-string p0, "count8->9; only later row indexes shift; native c9 cell bound; unique viewType; enabled; stable diff key; no clipboard writes"
+
+    return-object p0
 .end method
 
 .method static synthetic lambda$run$2()Ljava/lang/String;
@@ -3382,81 +4078,81 @@
     invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
 
     .line 49
-    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda7;
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda9;
 
-    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda7;-><init>()V
+    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda9;-><init>()V
 
     const-string v3, "protected_chat"
 
     invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
 
     .line 55
-    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda8;
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda10;
 
-    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda8;-><init>()V
+    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda10;-><init>()V
 
     const-string v3, "media_spoilers"
 
     invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
 
     .line 62
-    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda9;
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda11;
 
-    invoke-direct {v2, p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda9;-><init>(Landroid/app/Activity;)V
+    invoke-direct {v2, p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda11;-><init>(Landroid/app/Activity;)V
 
     const-string v3, "text_spoiler_mask"
 
     invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
 
     .line 73
-    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda10;
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda12;
 
-    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda10;-><init>()V
+    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda12;-><init>()V
 
     const-string v3, "premium_animation_not_membership"
 
     invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
 
     .line 82
-    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda11;
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda13;
 
-    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda11;-><init>()V
+    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda13;-><init>()V
 
     const-string v3, "reactions_all_sources"
 
     invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
 
     .line 90
-    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda12;
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda14;
 
-    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda12;-><init>()V
+    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda14;-><init>()V
 
     const-string v3, "premium_sticker_tab"
 
     invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
 
     .line 97
-    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda13;
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda15;
 
-    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda13;-><init>()V
+    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda15;-><init>()V
 
     const-string v3, "chat_blur_low_performance"
 
     invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
 
     .line 101
-    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda14;
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda16;
 
-    invoke-direct {v2, p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda14;-><init>(Landroid/app/Activity;)V
+    invoke-direct {v2, p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda16;-><init>(Landroid/app/Activity;)V
 
     const-string v3, "updates_create_and_remove_44dp_placeholder"
 
     invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
 
     .line 111
-    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda15;
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda17;
 
-    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda15;-><init>()V
+    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda17;-><init>()V
 
     const-string v3, "updates_availability_reversible"
 
@@ -3516,7 +4212,25 @@
 
     invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
 
-    .line 180
+    .line 178
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda7;
+
+    invoke-direct {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda7;-><init>()V
+
+    const-string v3, "profile_id_long_user_chat_topic"
+
+    invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
+
+    .line 187
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda8;
+
+    invoke-direct {v2, p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests$$ExternalSyntheticLambda8;-><init>(Landroid/app/Activity;)V
+
+    const-string v3, "profile_id_native_adapter_pipeline"
+
+    invoke-static {v1, v3, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->test(Lorg/json/JSONArray;Ljava/lang/String;Lcc/ioctl/tmoe/startup/ModernRuntimeTests$Test;)V
+
+    .line 210
     :try_start_1
     const-string v2, "tests"
 
@@ -3548,7 +4262,7 @@
 
     invoke-virtual {v0, v2, v3}, Lorg/json/JSONObject;->put(Ljava/lang/String;Ljava/lang/Object;)Lorg/json/JSONObject;
 
-    .line 181
+    .line 211
     const/4 v2, 0x0
 
     move v3, v2
@@ -3601,7 +4315,7 @@
 
     invoke-virtual {v0, v1, v4}, Lorg/json/JSONObject;->put(Ljava/lang/String;I)Lorg/json/JSONObject;
 
-    .line 182
+    .line 212
     new-instance v1, Ljava/io/File;
 
     invoke-virtual {p0}, Landroid/app/Activity;->getFilesDir()Ljava/io/File;
@@ -3638,7 +4352,7 @@
     :try_start_3
     invoke-virtual {p0}, Ljava/io/FileOutputStream;->close()V
 
-    .line 183
+    .line 213
     new-instance p0, Ljava/lang/StringBuilder;
 
     invoke-direct {p0}, Ljava/lang/StringBuilder;-><init>()V
@@ -3685,7 +4399,7 @@
 
     return-object p0
 
-    .line 182
+    .line 212
     :catchall_0
     move-exception v0
 
@@ -3707,7 +4421,7 @@
     :try_end_5
     .catchall {:try_start_5 .. :try_end_5} :catchall_2
 
-    .line 184
+    .line 214
     :catchall_2
     move-exception p0
 
