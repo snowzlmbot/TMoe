@@ -19,13 +19,16 @@ final class VerificationVideoFixture implements AutoCloseable {
     VerificationVideoFixture(Activity activity)throws Throwable{
         chat=raw("org.telegram.ui.ko");message=raw("org.telegram.messenger.MessageObject");animation=raw("org.telegram.ui.Components.f6");receiver=raw("cf.n1");cell=raw("org.telegram.ui.Cells/u1".replace('/','.'));media=raw("org.telegram.messenger.MediaController");
         try{
-            Object list=c("org.telegram.ui.ek").getDeclaredConstructor(c("org.telegram.ui.ko"),android.content.Context.class,c("org.telegram.ui.io")).newInstance(chat,activity,null);
+            Object list=raw("org.telegram.ui.ek");
+            hook("android.view.View","getMeasuredHeight",new Class<?>[0],chain->chain.getThisObject()==list?1800:chain.proceed());
+            hook("android.view.View","getTop",new Class<?>[0],chain->chain.getThisObject()==cell?0:chain.proceed());
             View hint=(View)c("org.telegram.ui.Components.j50").getDeclaredConstructor(android.content.Context.class,int.class).newInstance(activity,0);hint.setTag(true);
             set(hint,"d",cell);set(cell,"x7",message);set(cell,"R0",receiver);set(chat,"w0",list);set(chat,"s2",hint);
             hook("org.telegram.messenger.MediaController","getInstance",new Class<?>[0],chain->media);
             hook("org.telegram.messenger.MediaController","isPlayingMessage",new Class<?>[]{c("org.telegram.messenger.MessageObject")},chain->chain.getThisObject()==media?false:chain.proceed());
             hook("org.telegram.messenger.MediaController","playMessage",new Class<?>[]{c("org.telegram.messenger.MessageObject")},chain->{if(chain.getThisObject()==media&&chain.getArg(0)==message){playbackCalls++;return true;}return chain.proceed();});
             hook("org.telegram.messenger.ImageReceiver","getAnimation",new Class<?>[0],chain->chain.getThisObject()==receiver?animation:chain.proceed());
+            hook("org.telegram.messenger.ImageReceiver","getImageY2",new Class<?>[0],chain->chain.getThisObject()==receiver?20.0f:chain.proceed());
             hook("org.telegram.messenger.MessageObject","isRoundVideo",new Class<?>[0],chain->chain.getThisObject()==message?false:chain.proceed());
             hook("org.telegram.ui.ko","m9",new Class<?>[]{boolean.class},chain->chain.getThisObject()==chat?null:chain.proceed());
             hook("org.telegram.ui.Components.f6","n",new Class<?>[0],chain->chain.getThisObject()==animation?0.0f:chain.proceed());
