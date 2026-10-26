@@ -24,8 +24,8 @@ android {
         minSdk = Versions.minSdk
         targetSdk = Versions.targetSdk
 
-        versionCode = Common.getBuildVersionCode(rootProject)
-        versionName = Common.getBuildVersionName(rootProject)
+        versionCode = 300 + Common.getBuildVersionCode(rootProject)
+        versionName = "1.1.api102" + Common.getGitHeadRefsSuffix(rootProject)
 
         buildConfigField("String", "BUILD_UUID", "\"$currentBuildUuid\"")
         buildConfigField("long", "BUILD_TIMESTAMP", "${System.currentTimeMillis()}L")
@@ -42,6 +42,19 @@ android {
                 cppFlags += "-std=c++20"
                 arguments += "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
             }
+        }
+    }
+
+    flavorDimensions += "runtime"
+    productFlavors {
+        create("production") {
+            dimension = "runtime"
+            buildConfigField("boolean", "VERIFICATION_ENABLED", "false")
+        }
+        create("verification") {
+            dimension = "runtime"
+            buildConfigField("boolean", "VERIFICATION_ENABLED", "true")
+            versionNameSuffix = ".verification"
         }
     }
 
@@ -77,6 +90,10 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+    }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
     }
 
     if (System.getenv("KEYSTORE_PATH") != null) {
@@ -120,5 +137,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.ezxhelper)
     compileOnly(libs.xposed)
+    compileOnly("io.github.libxposed:api:102.0.0")
+    testImplementation("junit:junit:4.13.2")
     compileOnly(libs.javax.annotation)
 }

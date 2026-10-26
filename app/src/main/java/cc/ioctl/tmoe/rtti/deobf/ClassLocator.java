@@ -2,8 +2,8 @@ package cc.ioctl.tmoe.rtti.deobf;
 
 import javax.annotation.Nullable;
 
+import android.util.Log;
 import cc.ioctl.tmoe.util.Initiator;
-import cc.ioctl.tmoe.util.Utils;
 import cc.ioctl.tmoe.util.dex.DexKit;
 
 public class ClassLocator {
@@ -16,11 +16,10 @@ public class ClassLocator {
         if (kThemeClass != null) {
             return kThemeClass;
         }
-        if (kThemeFastFail) {
-            return null;
-        }
+        // Retry the canonical/versioned alias even after an early lookup failed.
+        // Modern startup can initialize HostInfo/Initiator after this class loads.
         kThemeClass = Initiator.load("org.telegram.ui.ActionBar.Theme");
-        if (kThemeClass != null) {
+        if (kThemeClass != null || kThemeFastFail) {
             return kThemeClass;
         }
         kThemeClass = DexKit.loadClassFromCache(DexKit.C_THEME);
@@ -53,7 +52,7 @@ public class ClassLocator {
         if (kUserConfigClass != null) {
             return kUserConfigClass;
         }
-        Utils.loge("UserConfig class not found");
+        Log.e("TMoe", "UserConfig class not found");
         return null;
     }
 
@@ -80,7 +79,7 @@ public class ClassLocator {
         if (kTlrpcUserClass != null) {
             return kTlrpcUserClass;
         }
-        Utils.loge("TLRPC$User class not found");
+        Log.e("TMoe", "TLRPC$User class not found");
         return null;
     }
 
@@ -107,7 +106,7 @@ public class ClassLocator {
         if (kTlrpcChatClass != null) {
             return kTlrpcChatClass;
         }
-        Utils.loge("TLRPC$Chat class not found");
+        Log.e("TMoe", "TLRPC$Chat class not found");
         return null;
     }
 }

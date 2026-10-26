@@ -1,8 +1,5 @@
 package cc.ioctl.tmoe.rtti;
 
-import android.content.Context;
-
-import org.jf.dexlib2.DexFileFactory;
 import org.jf.dexlib2.Opcode;
 import org.jf.dexlib2.Opcodes;
 import org.jf.dexlib2.iface.instruction.Instruction;
@@ -12,7 +9,6 @@ import org.jf.dexlib2.immutable.ImmutableField;
 import org.jf.dexlib2.immutable.ImmutableMethod;
 import org.jf.dexlib2.immutable.ImmutableMethodImplementation;
 import org.jf.dexlib2.immutable.ImmutableMethodParameter;
-import org.jf.dexlib2.immutable.instruction.ImmutableInstruction;
 import org.jf.dexlib2.immutable.instruction.ImmutableInstruction10x;
 import org.jf.dexlib2.immutable.instruction.ImmutableInstruction11x;
 import org.jf.dexlib2.immutable.instruction.ImmutableInstruction21c;
@@ -22,6 +18,13 @@ import org.jf.dexlib2.immutable.reference.ImmutableFieldReference;
 import org.jf.dexlib2.immutable.reference.ImmutableMethodReference;
 import org.jf.dexlib2.immutable.reference.ImmutableTypeReference;
 
+import org.jf.dexlib2.immutable.instruction.ImmutableInstruction3rc;
+import org.jf.dexlib2.immutable.instruction.ImmutableInstruction11n;
+import org.jf.dexlib2.immutable.instruction.ImmutableInstruction21s;
+import java.io.FileOutputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import android.view.ViewGroup;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -33,9 +36,9 @@ import java.util.List;
 import java.util.Objects;
 
 import cc.ioctl.tmoe.BuildConfig;
+import cc.ioctl.tmoe.util.HostInfo;
 import cc.ioctl.tmoe.util.dex.DexFieldDescriptor;
 import cc.ioctl.tmoe.util.dex.DexMethodDescriptor;
-import cc.ioctl.tmoe.util.HostInfo;
 
 public class ProxyFragmentImplDexCreator {
 
@@ -43,120 +46,162 @@ public class ProxyFragmentImplDexCreator {
     private static final String PROXY_FRAGMENT_IMPL_CLASS_NAME = "cc.ioctl.tmoe.dynamic.ProxyFragmentImpl";
     private static final String PROXY_FRAGMENT_IMPL_TYPE = "L" + PROXY_FRAGMENT_IMPL_CLASS_NAME.replace(".", "/") + ";";
     private static final String RTTI_HANDLER_TYPE = "L" + ProxyFragmentRttiHandler.class.getName().replace(".", "/") + ";";
-    private static final String OBJECT_TYPE = "Ljava/lang/Object;";
-    private static final String VIEW_GROUP_TYPE = "Landroid/view/ViewGroup;";
 
     private ProxyFragmentImplDexCreator() {
         throw new AssertionError("no instance for you!");
     }
 
-    public static File createProxyFragmentImplDex(Class<?> baseFragmentClass, Class<?> actionBar, Class<?> actionBarLayout)
+    public static synchronized File createProxyFragmentImplDex(Class<?> baseFragmentClass,
+            Class<?> actionBar, Class<?> actionBarLayout)
             throws ReflectiveOperationException, IOException {
-        String sigBaseFragmentClass = DexFieldDescriptor.getTypeSig(baseFragmentClass);
-        String sigActionBar = DexFieldDescriptor.getTypeSig(actionBar);
-        String sigActionBarLayout = DexFieldDescriptor.getTypeSig(actionBarLayout);
-        String hostAppVersionName = HostInfo.getVersionName();
-        String pluginVersionName = BuildConfig.VERSION_NAME;
-        String hashCode = String.valueOf(Objects.hash(baseFragmentClass, actionBar, actionBarLayout,
-                hostAppVersionName, pluginVersionName, HostInfo.getVersionCode(), BuildConfig.VERSION_CODE, BuildConfig.BUILD_UUID));
-        String dexName = "ProxyFragmentImpl_" + hostAppVersionName + "_" + pluginVersionName + "_" + hashCode + ".dex";
-        Context ctx = HostInfo.getApplication();
-        File dexTmpDir = new File(ctx.getFilesDir(), "tmoe_dyn_dex");
-        if (!dexTmpDir.exists()) {
-            dexTmpDir.mkdirs();
+        // Bump whenever bridge semantics change: never reuse a dex from the APK patch.
+        String hashCode = Integer.toHexString(Objects.hash("exact-host-v3",
+                baseFragmentClass.getName(), actionBar.getName(), actionBarLayout.getName(),
+                HostInfo.getPackageName(), HostInfo.getVersionCode(), BuildConfig.VERSION_NAME,
+                BuildConfig.VERSION_CODE, BuildConfig.BUILD_UUID));
+        File directory = new File(HostInfo.getApplication().getFilesDir(), "tmoe_dyn_dex");
+        if (!directory.isDirectory() && !directory.mkdirs()) {
+            throw new IOException("Cannot create dynamic dex directory: " + directory);
         }
-        // remove old dex if exists
-        File[] oldDexFileNames = dexTmpDir.listFiles();
-        if (oldDexFileNames != null) {
-            for (File f : oldDexFileNames) {
-                if ((f.getName().startsWith("ProxyFragmentImpl_") && f.getName().endsWith(".dex"))
-                        && !f.getName().equals(dexName)) {
-                    f.delete();
-                }
-            }
-        }
-        // check if dex file exists
-        File dexFile = new File(dexTmpDir, dexName);
-        if (dexFile.exists() && dexFile.length() > 0) {
+        File dexFile = new File(directory, "ProxyFragmentImpl_" + hashCode + ".dex");
+        if (dexFile.isFile() && dexFile.length() > 0) {
+            ensureReadOnly(dexFile);
             return dexFile;
         }
-        // create dex file if not exists
-        // find all exported methods in ProxyFragmentRttiHandler
-        ArrayList<DexMethodDescriptor> exportedMethods = new ArrayList<>();
-        for (Method m : ProxyFragmentRttiHandler.class.getDeclaredMethods()) {
-            if (Modifier.isPublic(m.getModifiers()) && !Modifier.isStatic(m.getModifiers())
-                    && m.getName().endsWith("$dispatcher")) {
-                String originalMethodName = m.getName().substring(0, m.getName().length() - "$dispatcher".length());
-                DexMethodDescriptor md = new DexMethodDescriptor(m);
-                exportedMethods.add(new DexMethodDescriptor(md.declaringClass, originalMethodName, md.signature));
+        String baseType = DexFieldDescriptor.getTypeSig(baseFragmentClass);
+        ArrayList<org.jf.dexlib2.iface.Method> methods = new ArrayList<>();
+        for (Method bridge : IProxyFragmentObject.class.getDeclaredMethods()) {
+            if (!bridge.getName().endsWith("$super")) {
+                continue;
+            }
+            String name = bridge.getName().substring(0, bridge.getName().length() - 6);
+            Method host = findHostMethod(baseFragmentClass, name, bridge, actionBar, actionBarLayout);
+            if (host == null || Modifier.isAbstract(host.getModifiers())) {
+                throw new NoSuchMethodException("Missing host super method for " + bridge);
+            }
+            // The stable Java interface determines the bridge descriptor, NOT the
+            // host's erased descriptor (parentLayout can now be an interface).
+            methods.add(generateProxySuperStubMethod(host, bridge));
+        }
+        Map<String, ImmutableMethod> dispatchers = new LinkedHashMap<>();
+        for (Method dispatcher : ProxyFragmentRttiHandler.class.getDeclaredMethods()) {
+            if (!Modifier.isPublic(dispatcher.getModifiers())
+                    || Modifier.isStatic(dispatcher.getModifiers())
+                    || !dispatcher.getName().endsWith("$dispatcher")) {
+                continue;
+            }
+            String name = dispatcher.getName().substring(0, dispatcher.getName().length() - 11);
+            Method host = findHostMethod(baseFragmentClass, name, dispatcher, actionBar, actionBarLayout);
+            // Obsolete callbacks must not create methods with fictitious signatures.
+            if (host == null || Modifier.isFinal(host.getModifiers())) {
+                continue;
+            }
+            ImmutableMethod generated = generateProxyDispatcherMethod(host, dispatcher);
+            String key = new DexMethodDescriptor(host).toString();
+            if (dispatchers.put(key, generated) != null) {
+                throw new IllegalStateException("Ambiguous host dispatcher: " + host);
             }
         }
-        // find all imported methods in IProxyFragmentObject
-        ArrayList<DexMethodDescriptor> importedSuperMethods = new ArrayList<>();
-        ArrayList<DexMethodDescriptor> missingImportedSuperMethods = new ArrayList<>();
-        for (Method m : IProxyFragmentObject.class.getDeclaredMethods()) {
-            if (m.getName().endsWith("$super")) {
-                boolean found = false;
-                int argCount = m.getParameterTypes().length;
-                // find corresponding method in host BaseFragment class
-                String originalMethodName = m.getName().substring(0, m.getName().length() - "$super".length());
-                for (Method hostMethod : baseFragmentClass.getDeclaredMethods()) {
-                    if (hostMethod.getName().equals(originalMethodName) && hostMethod.getParameterTypes().length == argCount) {
-                        // use original method name
-                        importedSuperMethods.add(new DexMethodDescriptor(hostMethod));
-                        found = true;
+        methods.addAll(dispatchers.values());
+        baseFragmentClass.getDeclaredConstructor(android.os.Bundle.class);
+        methods.addAll(generateProxyClassConstructor(baseType));
+        ImmutableField handlerField = new ImmutableField(PROXY_FRAGMENT_IMPL_TYPE, "h",
+                RTTI_HANDLER_TYPE, Modifier.PRIVATE | Modifier.FINAL, null, null, null);
+        ImmutableClassDef definition = new ImmutableClassDef(PROXY_FRAGMENT_IMPL_TYPE,
+                Modifier.PUBLIC, baseType,
+                Collections.singletonList(DexFieldDescriptor.getTypeSig(IProxyFragmentObject.class)),
+                "ProxyFragmentImpl.dexlib2", null, Collections.singletonList(handlerField), methods);
+        ImmutableDexFile dex = new ImmutableDexFile(Opcodes.forDexVersion(35),
+                Collections.singletonList(definition));
+        // Open the fd BEFORE chmod, then write through that fd. Android 14+ requires
+        // dynamically loaded code to be read-only; do not reopen a writable file.
+        File temporary = File.createTempFile("ProxyFragmentImpl_", ".tmp", directory);
+        try {
+            try (FileOutputStream output = new FileOutputStream(temporary)) {
+                ensureReadOnly(temporary);
+                org.jf.dexlib2.writer.io.MemoryDataStore store =
+                        new org.jf.dexlib2.writer.io.MemoryDataStore();
+                try {
+                    org.jf.dexlib2.writer.pool.DexPool.writeTo(store, dex);
+                    output.write(store.getBuffer(), 0, store.getSize());
+                    output.getFD().sync();
+                } finally {
+                    store.close();
+                }
+            }
+            if (dexFile.exists() && !dexFile.delete()) {
+                throw new IOException("Cannot replace empty dynamic dex: " + dexFile);
+            }
+            if (!temporary.renameTo(dexFile)) {
+                throw new IOException("Cannot publish dynamic dex: " + dexFile);
+            }
+            ensureReadOnly(dexFile);
+            return dexFile;
+        } finally {
+            if (temporary.exists()) {
+                temporary.delete();
+            }
+        }
+    }
+
+    private static void ensureReadOnly(File file) throws IOException {
+        if (!file.setReadOnly()) {
+            throw new IOException("Cannot make dynamic dex read-only: " + file);
+        }
+    }
+
+    private static Method findHostMethod(Class<?> base, String name, Method module,
+            Class<?> actionBar, Class<?> layout) throws NoSuchMethodException {
+        Method best = null;
+        int bestScore = -1;
+        for (Class<?> owner = base; owner != null; owner = owner.getSuperclass()) {
+            for (Method candidate : owner.getDeclaredMethods()) {
+                int modifiers = candidate.getModifiers();
+                if (!candidate.getName().equals(name) || Modifier.isStatic(modifiers)
+                        || Modifier.isPrivate(modifiers) || candidate.isBridge()
+                        || (!Modifier.isPublic(modifiers) && !Modifier.isProtected(modifiers))) {
+                    continue;
+                }
+                Class<?>[] hostTypes = candidate.getParameterTypes();
+                Class<?>[] moduleTypes = module.getParameterTypes();
+                if (hostTypes.length != moduleTypes.length) {
+                    continue;
+                }
+                int score = 0;
+                for (int i = 0; i < hostTypes.length; i++) {
+                    if (hostTypes[i] == moduleTypes[i]) {
+                        score += 4;
+                    } else if ((hostTypes[i] == base && moduleTypes[i] == Object.class)
+                            || ((hostTypes[i] == actionBar || hostTypes[i] == layout)
+                            && moduleTypes[i] == ViewGroup.class)) {
+                        score += 2;
+                    } else {
+                        score = -1;
                         break;
                     }
                 }
-                if (!found) {
-                    missingImportedSuperMethods.add(new DexMethodDescriptor(m));
+                Class<?> hostReturn = candidate.getReturnType();
+                Class<?> moduleReturn = module.getReturnType();
+                if (score < 0 || (hostReturn != moduleReturn && hostReturn != void.class
+                        && moduleReturn != void.class
+                        && (hostReturn.isPrimitive() || moduleReturn.isPrimitive()))) {
+                    continue;
+                }
+                if (score > bestScore) {
+                    best = candidate;
+                    bestScore = score;
+                } else if (score == bestScore && best != null
+                        && best.getDeclaringClass() == owner) {
+                    throw new NoSuchMethodException("Ambiguous host overload for " + module);
                 }
             }
+            // Prefer the closest class; overridden ancestor declarations are not
+            // alternative overloads and cannot be invoked as their own super.
+            if (best != null) {
+                return best;
+            }
         }
-        if (missingImportedSuperMethods.size() > 0) {
-            throw new RuntimeException("Missing imported methods in host " + baseFragmentClass
-                    + ": " + Arrays.toString(missingImportedSuperMethods.toArray()));
-        }
-        String sigBaseFragment = DexFieldDescriptor.getTypeSig(baseFragmentClass);
-        // create super method accessor
-        ArrayList<ImmutableMethod> superMethodAccessors = new ArrayList<>();
-        for (DexMethodDescriptor md : importedSuperMethods) {
-            ImmutableMethod method = generateProxySuperStubMethod(sigBaseFragment, md, actionBar, actionBarLayout);
-            superMethodAccessors.add(method);
-        }
-        // create proxy method accessor
-        ArrayList<ImmutableMethod> proxyMethodAccessors = new ArrayList<>();
-        for (DexMethodDescriptor md : exportedMethods) {
-            ImmutableMethod method = generateProxyDispatcherMethod(sigBaseFragment, md, actionBar, actionBarLayout);
-            proxyMethodAccessors.add(method);
-        }
-        ArrayList<ImmutableMethod> proxyConstructors = generateProxyClassConstructor(sigBaseFragment);
-        ArrayList<org.jf.dexlib2.iface.Method> declaredMethods = new ArrayList<>();
-        declaredMethods.addAll(superMethodAccessors);
-        declaredMethods.addAll(proxyMethodAccessors);
-        declaredMethods.addAll(proxyConstructors);
-        // proxy class definition
-        // package cc.ioctl.tmoe.dynamic;
-        // public class ProxyFragmentImpl extends BaseFragment implements IProxyFragmentObject {
-        //     private final cc.ioctl.tmoe.rtti.ProxyFragmentRttiHandler h;
-        //     public ProxyFragmentImpl(ProxyFragmentRttiHandler handler, Bundle args) {
-        //         super(args);
-        //         this.h = handler;
-        //     }
-        // }
-        // create proxy class
-        ImmutableField handlerField = new ImmutableField(PROXY_FRAGMENT_IMPL_TYPE, "h",
-                DexFieldDescriptor.getTypeSig(ProxyFragmentRttiHandler.class), Modifier.PRIVATE, null, null, null);
-        ImmutableClassDef proxyFragmentImplClassDef = new ImmutableClassDef(PROXY_FRAGMENT_IMPL_TYPE, Modifier.PUBLIC,
-                sigBaseFragment, Collections.singletonList(DexMethodDescriptor.getTypeSig(IProxyFragmentObject.class)),
-                "ProxyFragmentImpl.dexlib2", null, Collections.singletonList(handlerField), declaredMethods);
-        // create proxy dex
-        ImmutableDexFile proxyDex = new ImmutableDexFile(Opcodes.forDexVersion(35), Collections.singletonList(proxyFragmentImplClassDef));
-        // create proxy class file
-        dexFile.createNewFile();
-        DexFileFactory.writeDexFile(dexFile.getAbsolutePath(), proxyDex);
-        dexFile.setReadOnly();
-        return dexFile;
+        return null;
     }
 
     private static ArrayList<ImmutableMethod> generateProxyClassConstructor(String hostBaseFragmentTypeSig) {
@@ -189,138 +234,101 @@ public class ProxyFragmentImplDexCreator {
         return constructors;
     }
 
-    private static ImmutableMethod generateProxySuperStubMethod(String hostBaseFragmentTypeSig, DexMethodDescriptor targetMethodDescriptor,
-                                                                Class<?> kActionBar, Class<?> kActionBarLayout) {
-        String methodName = targetMethodDescriptor.name;
-        String generatedMethodName = methodName + "$super";
-        List<String> parameterTypeList = targetMethodDescriptor.getParameterTypes();
-        String parameterTypeSig = targetMethodDescriptor.signature;
-        String returnType = targetMethodDescriptor.getReturnType();
-        int parameterCount = parameterTypeList.size();
-        // replace host obfuscated class name with ViewGroup or Object
-        String returnTypeMitigated = returnType.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
-                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
-                .replace(hostBaseFragmentTypeSig, OBJECT_TYPE);
-        String parameterTypeSigMitigated = parameterTypeSig.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
-                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
-                .replace(hostBaseFragmentTypeSig, OBJECT_TYPE);
-        List<String> parameterTypeListMitigated = new ArrayList<>();
-        for (String parameterType : parameterTypeList) {
-            parameterTypeListMitigated.add(parameterType.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
-                    .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
-                    .replace(hostBaseFragmentTypeSig, OBJECT_TYPE));
-        }
-        // smali for method, no local variable
-        // .method public ${generatedMethodName}(${parameterTypeSigMitigated})${returnTypeMitigated}
-        // .registers 5
-        // .prologue
-        // invoke-super {p0, p1, p2, p3}, ${hostBaseFragmentTypeSig}->${methodName}(${parameterTypeSig})${returnType}
-        // #if returnType == "V"
-        // return-void
-        // #elseif returnType.startsWith("L") || returnType.startsWith("[")
-        // move-result-object v0
-        // return-object v0
-        // #else
-        // move-result v0
-        // return v0
-        // #endif
-        // .end method
-        List<Instruction> insSuperStub = new ArrayList<>();
-        // check cast if the parameter type is mitigated, make ART verifier happy
-        for (int i = 0; i < parameterCount; i++) {
-            String parameterTypeMitigated = parameterTypeListMitigated.get(i);
-            String parameterType = parameterTypeList.get(i);
-            if (!parameterTypeMitigated.equals(parameterType)) {
-                ImmutableTypeReference typeRef = new ImmutableTypeReference(parameterType);
-                // p0 is this, p1 is the first parameter, p2 is the second parameter, p3 is the third parameter
-                insSuperStub.add(new ImmutableInstruction21c(Opcode.CHECK_CAST, i + 1, typeRef));
+    private static ImmutableMethod generateProxySuperStubMethod(Method host, Method bridge) {
+        Class<?>[] bridgeTypes = bridge.getParameterTypes();
+        Class<?>[] hostTypes = host.getParameterTypes();
+        List<Instruction> instructions = new ArrayList<>();
+        int register = 3; // two result locals, then this, then parameters
+        for (int i = 0; i < bridgeTypes.length; i++) {
+            if (bridgeTypes[i] != hostTypes[i]) {
+                instructions.add(new ImmutableInstruction21c(Opcode.CHECK_CAST, register,
+                        new ImmutableTypeReference(DexFieldDescriptor.getTypeSig(hostTypes[i]))));
             }
+            register += wordCount(bridgeTypes[i]);
         }
-        insSuperStub.add(new ImmutableInstruction35c(Opcode.INVOKE_SUPER, parameterCount + 1, 0, 1, 2, 3, 4,
-                referenceMethod(hostBaseFragmentTypeSig, methodName, parameterTypeSig)));
-        if (returnType.equals("V")) {
-            insSuperStub.add(new ImmutableInstruction10x(Opcode.RETURN_VOID));
-        } else if (returnType.startsWith("L") || returnType.startsWith("[")) {
-            insSuperStub.add(new ImmutableInstruction11x(Opcode.MOVE_RESULT_OBJECT, 0));
-            insSuperStub.add(new ImmutableInstruction11x(Opcode.RETURN_OBJECT, 0));
-        } else {
-            insSuperStub.add(new ImmutableInstruction11x(Opcode.MOVE_RESULT, 0));
-            insSuperStub.add(new ImmutableInstruction11x(Opcode.RETURN, 0));
-        }
-        ArrayList<ImmutableMethodParameter> parameters = new ArrayList<>();
-        for (int i = 0; i < parameterCount; i++) {
-            parameters.add(new ImmutableMethodParameter(parameterTypeListMitigated.get(i), null, "p" + (i + 1)));
-        }
-        ImmutableMethodImplementation methodImpl = new ImmutableMethodImplementation(parameterCount + 1, insSuperStub, null, null);
-        return new ImmutableMethod(PROXY_FRAGMENT_IMPL_TYPE, generatedMethodName, parameters,
-                returnTypeMitigated, Modifier.PUBLIC, null, null, methodImpl);
+        instructions.add(new ImmutableInstruction3rc(Opcode.INVOKE_SUPER_RANGE,
+                2, 1 + parameterWords(hostTypes), referenceMethod(new DexMethodDescriptor(host))));
+        appendReturn(instructions, host.getReturnType(), bridge.getReturnType());
+        return immutableMethod(bridge.getName(), bridgeTypes, bridge.getReturnType(),
+                3 + parameterWords(bridgeTypes), instructions);
     }
 
-    private static ImmutableMethod generateProxyDispatcherMethod(String hostBaseFragmentTypeSig, DexMethodDescriptor targetMethodDescriptor,
-                                                                 Class<?> kActionBar, Class<?> kActionBarLayout) {
-        String methodName = targetMethodDescriptor.name;
-        String dispatchMethodName = methodName + "$dispatcher";
-        List<String> parameterTypeList = targetMethodDescriptor.getParameterTypes();
-        String parameterTypeSig = targetMethodDescriptor.signature;
-        String returnType = targetMethodDescriptor.getReturnType();
-        int parameterCount = parameterTypeList.size(); // including this
-        // replace host obfuscatable class name with ViewGroup or Object
-        String returnTypeMitigated = returnType.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
-                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
-                .replace(hostBaseFragmentTypeSig, OBJECT_TYPE);
-        String parameterTypeSigMitigated = parameterTypeSig.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
-                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
-                .replace(hostBaseFragmentTypeSig, OBJECT_TYPE);
-        List<String> parameterTypeListMitigated = new ArrayList<>();
-        for (String parameterType : parameterTypeList) {
-            parameterTypeListMitigated.add(parameterType.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
-                    .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
-                    .replace(hostBaseFragmentTypeSig, OBJECT_TYPE));
-        }
-        // smali for super stub method
-        // .method public ${methodName}(${parameterTypeSig})${returnType}
-        // .locals 1
-        // .prologue
-        // iget-object v0, p0, Lcc/ioctl/tmoe/dynamic/ProxyFragmentImpl;->h:Lcc/ioctl/tmoe/rtti/ProxyFragmentRttiHandler;
-        // invoke-virtual {v0, p0, p1, p2}, Lcc/ioctl/tmoe/rtti/ProxyFragmentRttiHandler;->${dispatchMethodName}(${parameterTypeSigMitigated})${returnTypeMitigated}
-        // #if returnTypeMitigated == "V"
-        // return-void
-        // #elseif returnTypeMitigated.startsWith("L") || returnTypeMitigated.startsWith("[")
-        // move-result-object v0
-        // return-object v0
-        // #else
-        // move-result v0
-        // return v0
-        // #endif
-        // .end method
-        ArrayList<ImmutableInstruction> insStub = new ArrayList<>();
-        int localVarCount = 1;
-        insStub.add(new ImmutableInstruction22c(Opcode.IGET_OBJECT, 0, localVarCount + 0,
+    private static ImmutableMethod generateProxyDispatcherMethod(Method host, Method dispatcher) {
+        Class<?>[] hostTypes = host.getParameterTypes();
+        Class<?>[] moduleTypes = dispatcher.getParameterTypes();
+        List<Instruction> instructions = new ArrayList<>();
+        // Reserve v0/v1 for results. v2 (this) becomes the handler, leaving a
+        // contiguous handler+argument range even with long/double parameters.
+        instructions.add(new ImmutableInstruction22c(Opcode.IGET_OBJECT, 2, 2,
                 referenceField(PROXY_FRAGMENT_IMPL_TYPE, "h", RTTI_HANDLER_TYPE)));
-        insStub.add(new ImmutableInstruction35c(Opcode.INVOKE_VIRTUAL, parameterCount + 1,
-                0, localVarCount + 1, localVarCount + 2, localVarCount + 3, localVarCount + 4,
-                referenceMethod(RTTI_HANDLER_TYPE, dispatchMethodName, parameterTypeSigMitigated)));
-        if (returnTypeMitigated.equals("V")) {
-            insStub.add(new ImmutableInstruction10x(Opcode.RETURN_VOID));
-        } else if (returnTypeMitigated.startsWith("L") || returnTypeMitigated.startsWith("[")) {
-            insStub.add(new ImmutableInstruction11x(Opcode.MOVE_RESULT_OBJECT, 0));
-            insStub.add(new ImmutableInstruction11x(Opcode.RETURN_OBJECT, 0));
-            // check cast if the return type is mitigated, make ART verifier happy
-            // result object is in v0
-            if (!returnTypeMitigated.equals(returnType)) {
-                insStub.add(new ImmutableInstruction21c(Opcode.CHECK_CAST, 0, new ImmutableTypeReference(returnType)));
+        int register = 3;
+        for (int i = 0; i < hostTypes.length; i++) {
+            if (hostTypes[i] != moduleTypes[i] && !moduleTypes[i].isAssignableFrom(hostTypes[i])) {
+                instructions.add(new ImmutableInstruction21c(Opcode.CHECK_CAST, register,
+                        new ImmutableTypeReference(DexFieldDescriptor.getTypeSig(moduleTypes[i]))));
             }
-        } else {
-            insStub.add(new ImmutableInstruction11x(Opcode.MOVE_RESULT, 0));
-            insStub.add(new ImmutableInstruction11x(Opcode.RETURN, 0));
+            register += wordCount(hostTypes[i]);
         }
+        instructions.add(new ImmutableInstruction3rc(Opcode.INVOKE_VIRTUAL_RANGE,
+                2, 1 + parameterWords(moduleTypes), referenceMethod(new DexMethodDescriptor(dispatcher))));
+        appendReturn(instructions, dispatcher.getReturnType(), host.getReturnType());
+        return immutableMethod(host.getName(), hostTypes, host.getReturnType(),
+                3 + parameterWords(hostTypes), instructions);
+    }
+
+    private static ImmutableMethod immutableMethod(String name, Class<?>[] types,
+            Class<?> returnType, int registers, List<Instruction> instructions) {
         ArrayList<ImmutableMethodParameter> parameters = new ArrayList<>();
-        for (int i = 0; i < parameterCount; i++) {
-            parameters.add(new ImmutableMethodParameter(parameterTypeList.get(i), null, "p" + (i + 1)));
+        for (int i = 0; i < types.length; i++) {
+            parameters.add(new ImmutableMethodParameter(DexFieldDescriptor.getTypeSig(types[i]),
+                    null, "p" + (i + 1)));
         }
-        ImmutableMethodImplementation methodImpl = new ImmutableMethodImplementation(localVarCount + parameterCount + 1, insStub, null, null);
-        return new ImmutableMethod(PROXY_FRAGMENT_IMPL_TYPE, methodName, parameters, returnType,
-                Modifier.PUBLIC, null, null, methodImpl);
+        return new ImmutableMethod(PROXY_FRAGMENT_IMPL_TYPE, name, parameters,
+                DexFieldDescriptor.getTypeSig(returnType), Modifier.PUBLIC, null, null,
+                new ImmutableMethodImplementation(registers, instructions, null, null));
+    }
+
+    private static int wordCount(Class<?> type) {
+        return type == long.class || type == double.class ? 2 : 1;
+    }
+
+    private static int parameterWords(Class<?>[] types) {
+        int result = 0;
+        for (Class<?> type : types) {
+            result += wordCount(type);
+        }
+        return result;
+    }
+
+    private static void appendReturn(List<Instruction> instructions,
+            Class<?> invokedType, Class<?> declaredType) {
+        if (declaredType == void.class) {
+            // In particular finishFragment(boolean): host returns Z, Java bridge V.
+            instructions.add(new ImmutableInstruction10x(Opcode.RETURN_VOID));
+            return;
+        }
+        if (invokedType == void.class) {
+            if (declaredType == long.class || declaredType == double.class) {
+                instructions.add(new ImmutableInstruction21s(Opcode.CONST_WIDE_16, 0, 0));
+            } else {
+                instructions.add(new ImmutableInstruction11n(Opcode.CONST_4, 0,
+                        declaredType == boolean.class ? 1 : 0));
+            }
+        } else if (!invokedType.isPrimitive()) {
+            instructions.add(new ImmutableInstruction11x(Opcode.MOVE_RESULT_OBJECT, 0));
+            if (!declaredType.isAssignableFrom(invokedType)) {
+                // Must precede return-object, not follow unreachable after it.
+                instructions.add(new ImmutableInstruction21c(Opcode.CHECK_CAST, 0,
+                        new ImmutableTypeReference(DexFieldDescriptor.getTypeSig(declaredType))));
+            }
+        } else if (wordCount(invokedType) == 2) {
+            instructions.add(new ImmutableInstruction11x(Opcode.MOVE_RESULT_WIDE, 0));
+        } else {
+            instructions.add(new ImmutableInstruction11x(Opcode.MOVE_RESULT, 0));
+        }
+        Opcode opcode = !declaredType.isPrimitive() ? Opcode.RETURN_OBJECT
+                : wordCount(declaredType) == 2 ? Opcode.RETURN_WIDE : Opcode.RETURN;
+        instructions.add(new ImmutableInstruction11x(opcode, 0));
     }
 
     private static ImmutableMethodReference referenceMethod(String declaringClass, String name, String descriptor) {

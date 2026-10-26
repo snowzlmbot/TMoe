@@ -1,9 +1,5 @@
 package cc.ioctl.tmoe.lifecycle;
 
-import static cc.ioctl.tmoe.util.Utils.logd;
-import static cc.ioctl.tmoe.util.Utils.loge;
-import static cc.ioctl.tmoe.util.Utils.logi;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
@@ -45,10 +41,9 @@ import java.lang.reflect.Proxy;
 import java.util.List;
 
 import cc.ioctl.tmoe.R;
-import cc.ioctl.tmoe.startup.HookEntry;
 import cc.ioctl.tmoe.util.HostInfo;
 import cc.ioctl.tmoe.util.Initiator;
-import cc.ioctl.tmoe.util.Log;
+import android.util.Log;
 import cc.ioctl.tmoe.util.SyncUtils;
 
 /**
@@ -64,6 +59,25 @@ public class Parasitics {
     private static long sResInjectEndTime = 0;
     private static long sActStubHookBeginTime = 0;
     private static long sActStubHookEndTime = 0;
+
+    private static volatile String sModulePathOverride;
+
+    /** Set by the modern entry before resource injection; never initializes HookEntry. */
+    public static void setModulePathOverride(@Nullable String path) {
+        if (path != null && path.isEmpty()) {
+            throw new IllegalArgumentException("module path is empty");
+        }
+        sModulePathOverride = path;
+    }
+
+    // These methods intentionally do not call Utils/legacy logging bridges.
+    private static void loge(Throwable error) {
+        Log.e("TMoe", "Parasitics", error);
+    }
+
+    private static void logi(String message) {
+        Log.i("TMoe", message);
+    }
 
     public static int getResourceInjectionCost() {
         if (sResInjectEndTime > 0) {
@@ -88,9 +102,24 @@ public class Parasitics {
             return;
         } catch (Resources.NotFoundException ignored) {
         }
-        String sModulePath = HookEntry.getModulePath();
+        String sModulePath = sModulePathOverride;
         if (sModulePath == null) {
-            throw new RuntimeException("get module path failed, loader=" + Parasitics.class.getClassLoader());
+            // Legacy-only fallback. Keep the class symbolic reference off the modern
+            // verifier path: HookEntry implements legacy Xposed interfaces.
+            try {
+                Class<?> entry = Class.forName("cc.ioctl.tmoe.startup.HookEntry", false,
+                        Parasitics.class.getClassLoader());
+                sModulePath = (String) entry.getMethod("getModulePath").invoke(null);
+            } catch (ReflectiveOperationException | LinkageError e) {
+                throw new IllegalStateException("get module path failed, loader="
+                        + Parasitics.class.getClassLoader(), e);
+            }
+        }
+        if (sModulePath == null) {
+            throw new IllegalStateException("get module path failed, loader=" + Parasitics.class.getClassLoader());
+        }
+        if (sResInjectBeginTime == 0) {
+            sResInjectBeginTime = System.currentTimeMillis();
         }
         // AssetsManager.addAssetPath starts to break on Android 12.
         // ResourcesLoader is added since Android 11.
@@ -155,13 +184,13 @@ public class Parasitics {
                 logForResourceInjectFailure(path, e, 0);
             }
         } catch (Exception e) {
-            Log.e(e);
+            loge(e);
         }
     }
 
     private static void logForResourceInjectFailure(@NonNull String path, @NonNull Throwable e, int cookie) {
-        Log.e("Fatal: injectModuleResources: test injection failure!");
-        Log.e("injectModuleResources: path=" + path + ", cookie=" + cookie +
+        Log.e("TMoe", "Fatal: injectModuleResources: test injection failure!", e);
+        Log.e("TMoe", "injectModuleResources: path=" + path + ", cookie=" + cookie +
                 ", loader=" + Parasitics.class.getClassLoader());
         long length = -1;
         boolean read = false;
@@ -172,7 +201,7 @@ public class Parasitics {
         isDir = f.isDirectory();
         length = f.length();
         read = f.canRead();
-        Log.e("sModulePath: exists = " + exist + ", isDirectory = " + isDir + ", canRead = " + read + ", fileLength = " + length);
+        Log.e("TMoe", "sModulePath: exists = " + exist + ", isDirectory = " + isDir + ", canRead = " + read + ", fileLength = " + length);
     }
 
     @SuppressLint("PrivateApi")

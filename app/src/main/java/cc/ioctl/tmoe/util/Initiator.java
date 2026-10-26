@@ -7,8 +7,8 @@ import androidx.annotation.Nullable;
  * Host class reference.
  */
 public class Initiator {
-    private static ClassLoader sHostClassLoader;
-    private static ClassLoader sPluginParentClassLoader;
+    private static volatile ClassLoader sHostClassLoader;
+    private static ClassLoader sPluginParentClassLoader = Initiator.class.getClassLoader();
 
     private Initiator() {
         throw new AssertionError("No instance for you!");
@@ -52,14 +52,40 @@ public class Initiator {
         if (className.startsWith(".")) {
             className = HostInfo.getPackageName() + className;
         }
-        try {
-            return sHostClassLoader.loadClass(className);
-        } catch (ClassNotFoundException ignored) {
+        Class<?> direct = loadDirect(className);
+        if (direct != null) {
+            return direct;
         }
-        try {
-            return sPluginParentClassLoader.loadClass(className);
-        } catch (ClassNotFoundException ignored) {
+        // Obfuscated aliases are tied to an exact package/version; never guess them.
+        if (HostInfo.getApplication() == null) {
             return null;
         }
+        for (String alias : HostSignatureRegistry.aliases(HostInfo.getPackageName(),
+                HostInfo.getVersionCode(), className)) {
+            Class<?> resolved = loadDirect(alias);
+            if (resolved != null) {
+                return resolved;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    static Class<?> loadDirect(@NonNull String className) {
+        ClassLoader host = sHostClassLoader;
+        if (host != null) {
+            try {
+                return host.loadClass(className);
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+        ClassLoader plugin = sPluginParentClassLoader;
+        if (plugin != null && plugin != host) {
+            try {
+                return plugin.loadClass(className);
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+        return null;
     }
 }

@@ -1,0 +1,77 @@
+name: source-build-api102
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'build-logic/**'
+      - 'gradle/**'
+      - '*.gradle.kts'
+
+permissions:
+  contents: write
+
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - name: Install source build tools
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0' 'ndk;27.2.12479018' 'cmake;3.31.1'
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "$ANDROID_HOME/build-tools/35.0.0" >> "$GITHUB_PATH"
+          chmod +x gradlew
+      - name: Build application from Java Kotlin C++ sources and test
+        run: |
+          ./gradlew --no-daemon --max-workers=2 :app:testProductionDebugUnitTest :app:assembleProductionRelease :app:assembleVerificationRelease
+      - name: Validate production separation
+        run: |
+          python3 tools/verify_source_apk.py app/build/outputs/apk/production/release/app-production-release-unsigned.apk
+      - name: Sign with persistent repository key
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          SIGN_KEYSTORE_BASE64: ${{ secrets.SIGN_KEYSTORE_BASE64 }}
+          SIGN_KEYSTORE_PASSWORD: ${{ secrets.SIGN_KEYSTORE_PASSWORD }}
+          SIGN_KEY_ALIAS: ${{ secrets.SIGN_KEY_ALIAS }}
+          SIGN_KEY_PASSWORD: ${{ secrets.SIGN_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for n in SIGN_KEYSTORE_BASE64 SIGN_KEYSTORE_PASSWORD SIGN_KEY_ALIAS SIGN_KEY_PASSWORD; do
+            test -n "${!n}" || { echo "Missing $n; refusing temporary signing key"; exit 1; }
+          done
+          trap 'rm -f source-signing.jks' EXIT
+          printf '%s' "$SIGN_KEYSTORE_BASE64" | base64 -d > source-signing.jks
+          chmod 600 source-signing.jks
+          for flavor in production verification; do
+            src="app/build/outputs/apk/$flavor/release/app-$flavor-release-unsigned.apk"
+            zipalign -f -p 4 "$src" "$flavor-aligned.apk"
+            apksigner sign --ks source-signing.jks --ks-key-alias "$SIGN_KEY_ALIAS" --ks-pass env:SIGN_KEYSTORE_PASSWORD --key-pass env:SIGN_KEY_PASSWORD --out "TMoe-source-$flavor.apk" "$flavor-aligned.apk"
+            apksigner verify --verbose --print-certs "TMoe-source-$flavor.apk" > "$flavor-signature.txt"
+            zipalign -c -p 4 "TMoe-source-$flavor.apk"
+            sha256sum "TMoe-source-$flavor.apk"
+          done > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TMoe-source-${{ github.run_number }}
+          path: |
+            TMoe-source-*.apk
+            SHA256SUMS.txt
+            *-signature.txt
+            app/build/reports/tests/
+            app/build/outputs/apk/
+          if-no-files-found: error
+      - name: Publish source-built candidate
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "source-72299-${GITHUB_RUN_NUMBER}" TMoe-source-production.apk TMoe-source-verification.apk SHA256SUMS.txt production-signature.txt verification-signature.txt --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease --title "TMoe source integration candidate ${GITHUB_RUN_NUMBER}" --notes 'Built from app Java/Kotlin/C++ source, not a patched base APK. Production excludes account/clipboard verification classes. On-device source-build regression must be completed before promotion.'

@@ -14,24 +14,27 @@ public class HostFirstClassReferencer extends ClassLoader {
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        try {
-            assert BOOTSTRAP != null;
-            return BOOTSTRAP.loadClass(name);
-        } catch (ClassNotFoundException ignored) {
+        // Keep module interfaces and dispatchers in the module's defining loader.
+        // Host loaders may contain another copy of TMoe (or reject module names).
+        ClassLoader plugin = HostFirstClassReferencer.class.getClassLoader();
+        if (name.startsWith("cc.ioctl.tmoe.") && plugin != null) {
+            return plugin.loadClass(name);
         }
-        // try host class loader first
-        try {
-            return mHostReferencer.loadClass(name);
-        } catch (ClassNotFoundException cnfe) {
-            // try plugin class loader
+        if (BOOTSTRAP != null) {
             try {
-                ClassLoader pluginClassLoader = HostFirstClassReferencer.class.getClassLoader();
-                assert pluginClassLoader != null;
-                return pluginClassLoader.loadClass(name);
+                return BOOTSTRAP.loadClass(name);
             } catch (ClassNotFoundException ignored) {
             }
-            // class not found
-            throw cnfe;
         }
+        if (mHostReferencer != null) {
+            try {
+                return mHostReferencer.loadClass(name);
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+        if (plugin != null) {
+            return plugin.loadClass(name);
+        }
+        throw new ClassNotFoundException(name);
     }
 }

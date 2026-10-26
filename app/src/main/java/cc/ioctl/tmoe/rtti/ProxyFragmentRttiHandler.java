@@ -18,6 +18,8 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,8 +30,7 @@ import cc.ioctl.tmoe.lifecycle.Parasitics;
 import cc.ioctl.tmoe.util.HostFirstClassReferencer;
 import cc.ioctl.tmoe.util.HostInfo;
 import cc.ioctl.tmoe.util.Initiator;
-import cc.ioctl.tmoe.util.Reflex;
-import cc.ioctl.tmoe.util.Utils;
+import android.util.Log;
 import dalvik.system.DexClassLoader;
 
 public class ProxyFragmentRttiHandler {
@@ -48,14 +49,49 @@ public class ProxyFragmentRttiHandler {
         return mProxyInstance;
     }
 
+    private static Field instanceField(Class<?> type, String name) throws NoSuchFieldException {
+        for (Class<?> owner = type; owner != null; owner = owner.getSuperclass()) {
+            try {
+                Field field = owner.getDeclaredField(name);
+                field.setAccessible(true);
+                return field;
+            } catch (NoSuchFieldException ignored) {
+            }
+        }
+        throw new NoSuchFieldException(type.getName() + "." + name);
+    }
+
+    @Nullable
+    private static Object getFieldOrNull(Object target, String name) {
+        try {
+            return instanceField(target.getClass(), name).get(target);
+        } catch (ReflectiveOperationException e) {
+            Log.e("TMoe", "Cannot read host fragment field " + name, e);
+            return null;
+        }
+    }
+
+    private static Object invokeHost(Object target, String name, Class<?>[] types,
+            Object... args) throws ReflectiveOperationException {
+        for (Class<?> owner = target.getClass(); owner != null; owner = owner.getSuperclass()) {
+            try {
+                Method method = owner.getDeclaredMethod(name, types);
+                method.setAccessible(true);
+                return method.invoke(target, args);
+            } catch (NoSuchMethodException ignored) {
+            }
+        }
+        throw new NoSuchMethodException(target.getClass().getName() + "." + name);
+    }
+
     // -----------------------------------------------
     // reflect implementation
 
     public void setFragmentView(View view) {
         Object proxy = getProxyInstance();
         try {
-            Reflex.setInstanceObject(proxy, "fragmentView", view);
-        } catch (NoSuchFieldException e) {
+            instanceField(proxy.getClass(), "fragmentView").set(proxy, view);
+        } catch (ReflectiveOperationException e) {
             // if this fails, we're probably unable to do anything
             throw new RuntimeException(e);
         }
@@ -63,12 +99,12 @@ public class ProxyFragmentRttiHandler {
 
     public View getFragmentView() {
         Object proxy = getProxyInstance();
-        return (View) Reflex.getInstanceObjectOrNull(proxy, "fragmentView");
+        return (View) getFieldOrNull(proxy, "fragmentView");
     }
 
     public ViewGroup getActionBar() {
         Object obj = getProxyInstance();
-        return (ViewGroup) Reflex.getInstanceObjectOrNull(obj, "actionBar");
+        return (ViewGroup) getFieldOrNull(obj, "actionBar");
     }
 
     public BaseProxyFragment.ActionBarWrapper getActionBarWrapper() {
@@ -89,27 +125,27 @@ public class ProxyFragmentRttiHandler {
         @Override
         public void setBackButtonImage(int resource) {
             try {
-                Reflex.invokeVirtual(actionBar, "setBackButtonImage", resource, int.class, void.class);
+                invokeHost(actionBar, "setBackButtonImage", new Class<?>[]{int.class}, resource);
             } catch (Exception e) {
-                Utils.loge(e);
+                Log.e("TMoe", "ProxyFragment runtime", e);
             }
         }
 
         @Override
         public void setTitle(CharSequence value) {
             try {
-                Reflex.invokeVirtual(actionBar, "setTitle", value, CharSequence.class, void.class);
+                invokeHost(actionBar, "setTitle", new Class<?>[]{CharSequence.class}, value);
             } catch (Exception e) {
-                Utils.loge(e);
+                Log.e("TMoe", "ProxyFragment runtime", e);
             }
         }
 
         @Override
         public String getTitle() {
             try {
-                return (String) Reflex.invokeVirtual(actionBar, "getTitle", String.class);
+                return (String) invokeHost(actionBar, "getTitle", new Class<?>[0]);
             } catch (Exception e) {
-                Utils.loge(e);
+                Log.e("TMoe", "ProxyFragment runtime", e);
                 return null;
             }
         }
@@ -117,9 +153,9 @@ public class ProxyFragmentRttiHandler {
         @Override
         public String getSubtitle() {
             try {
-                return (String) Reflex.invokeVirtual(actionBar, "getSubtitle", String.class);
+                return (String) invokeHost(actionBar, "getSubtitle", new Class<?>[0]);
             } catch (Exception e) {
-                Utils.loge(e);
+                Log.e("TMoe", "ProxyFragment runtime", e);
                 return null;
             }
         }
@@ -127,18 +163,18 @@ public class ProxyFragmentRttiHandler {
         @Override
         public void setSubtitle(CharSequence value) {
             try {
-                Reflex.invokeVirtual(actionBar, "setSubtitle", value, CharSequence.class, void.class);
+                invokeHost(actionBar, "setSubtitle", new Class<?>[]{CharSequence.class}, value);
             } catch (Exception e) {
-                Utils.loge(e);
+                Log.e("TMoe", "ProxyFragment runtime", e);
             }
         }
 
         @Override
         public ImageView getBackButton() {
             try {
-                return (ImageView) Reflex.invokeVirtual(actionBar, "getBackButton", ImageView.class);
+                return (ImageView) invokeHost(actionBar, "getBackButton", new Class<?>[0]);
             } catch (Exception e) {
-                Utils.loge(e);
+                Log.e("TMoe", "ProxyFragment runtime", e);
                 return null;
             }
         }
@@ -159,7 +195,58 @@ public class ProxyFragmentRttiHandler {
     }
 
     public static ViewGroup staticGetParentLayout(Object fragment) {
-        return (ViewGroup) Reflex.getInstanceObjectOrNull(fragment, "parentLayout");
+        return (ViewGroup) parentLayoutView(staticGetParentLayoutObject(fragment));
+    }
+
+    /** Raw layout handle: modern Telegram uses an interface, not a ViewGroup. */
+    public static Object staticGetParentLayoutObject(Object fragment) {
+        return getFieldOrNull(fragment, "parentLayout");
+    }
+
+    @Nullable
+    private static Object parentLayoutView(Object layout) {
+        if (layout == null || layout instanceof ViewGroup) {
+            return layout;
+        }
+        try {
+            Object view = layout.getClass().getMethod("getView").invoke(layout);
+            return view instanceof ViewGroup ? view : null;
+        } catch (ReflectiveOperationException e) {
+            Log.e("TMoe", "Cannot resolve parent layout view", e);
+            return null;
+        }
+    }
+
+    /** Prefer this entry in modern UI: use inherited BaseFragment navigation. */
+    public static boolean presentFragment(@NonNull Object source, @NonNull Object fragment) {
+        return presentFragment(source, fragment, false, false);
+    }
+
+    public static boolean presentFragment(@NonNull Object source, @NonNull Object fragment,
+            boolean removeLast, boolean forceWithoutAnimation) {
+        if (source instanceof BaseProxyFragment) {
+            source = ((BaseProxyFragment) source).getProxyObject();
+        }
+        if (fragment instanceof BaseProxyFragment) {
+            fragment = ((BaseProxyFragment) fragment).getProxyObject();
+        }
+        Class<?> base = sHostBaseFragmentClass;
+        if (base == null || !base.isInstance(source) || !base.isInstance(fragment)) {
+            throw new IllegalArgumentException("Source and target must be host BaseFragments");
+        }
+        try {
+            Object result;
+            if (!removeLast && !forceWithoutAnimation) {
+                result = base.getMethod("presentFragment", base).invoke(source, fragment);
+            } else {
+                result = base.getMethod("presentFragment", base, boolean.class, boolean.class)
+                        .invoke(source, fragment, removeLast, forceWithoutAnimation);
+            }
+            return Boolean.TRUE.equals(result);
+        } catch (ReflectiveOperationException e) {
+            Log.e("TMoe", "Host BaseFragment.presentFragment failed", e);
+            return false;
+        }
     }
 
     public static boolean staticPresentFragment(@NonNull ViewGroup parentLayout, @NonNull Object fragment, boolean removeLast) {
@@ -192,7 +279,7 @@ public class ProxyFragmentRttiHandler {
                                 boolean.class, boolean.class, boolean.class, boolean.class, View.class)
                         .invoke(parentLayout, fragment, removeLast, forceWithoutAnimation, check, preview, menu));
             } catch (ReflectiveOperationException e2) {
-                Utils.loge(e1);
+                Log.e("TMoe", "ProxyFragment runtime", e1);
                 return false;
             }
         }
@@ -318,7 +405,7 @@ public class ProxyFragmentRttiHandler {
     }
 
     public ViewGroup createActionBar$dispatcher(Context context) {
-        return mProxyInstance.createActionBar$super(context);
+        return mTargetFragment.createActionBar(context);
     }
 
     public void finishFragmentSuper() {
@@ -347,15 +434,19 @@ public class ProxyFragmentRttiHandler {
 
     public boolean isFinishing() {
         try {
-            return Boolean.TRUE.equals(Reflex.getInstanceObject(mTargetFragment, "finishing", boolean.class));
+            return Boolean.TRUE.equals(invokeHost(getProxyInstance(), "isFinishing", new Class<?>[0]));
         } catch (ReflectiveOperationException e) {
-            Utils.loge(e);
+            Log.e("TMoe", "ProxyFragment runtime", e);
             return false;
         }
     }
 
-    public void onFragmentCreate() {
-        mProxyInstance.onFragmentCreate$super();
+    public boolean onFragmentCreate() {
+        return mProxyInstance.onFragmentCreate$super();
+    }
+
+    public boolean onFragmentCreate$dispatcher() {
+        return mTargetFragment.onFragmentCreate();
     }
 
     public void onFragmentDestroySuper() {
@@ -406,6 +497,12 @@ public class ProxyFragmentRttiHandler {
         return mTargetFragment.onBackPressed();
     }
 
+    // New Telegram passes a navigation-origin flag. Keep the module callback
+    // stable while generating the exact host (Z)Z override.
+    public boolean onBackPressed$dispatcher(boolean fromButton) {
+        return mTargetFragment.onBackPressed();
+    }
+
     public void onActivityResultFragment$dispatcher(int requestCode, int resultCode, Intent data) {
         mTargetFragment.onActivityResultFragment(requestCode, resultCode, data);
     }
@@ -446,8 +543,8 @@ public class ProxyFragmentRttiHandler {
         mProxyInstance.dismissCurrentDialog$super();
     }
 
-    public void dismissDialogOnPause$dispatcher(Dialog dialog) {
-        mTargetFragment.dismissDialogOnPause(dialog);
+    public boolean dismissDialogOnPause$dispatcher(Dialog dialog) {
+        return mTargetFragment.dismissDialogOnPause(dialog);
     }
 
     public boolean canBeginSlide$dispatcher() {
@@ -497,35 +594,47 @@ public class ProxyFragmentRttiHandler {
     // -------------------------------------------------------
     // static methods
 
-    private static Class<?> sRttiProxyFragmentClass;
+    private static volatile Class<?> sRttiProxyFragmentClass;
     private static Class<?> sHostBaseFragmentClass;
     private static Class<?> sHostActionBarLayoutClass;
     private static Class<?> sHostActionBarClass;
     private static Class<?> sHostActionBarPopupWindowLayoutClass;
 
-    public static void initProxyFragmentClass(Class<?> hostBaseFragmentClass)
+    public static synchronized void initProxyFragmentClass(Class<?> hostBaseFragmentClass)
             throws ReflectiveOperationException {
-        // BaseFragment must has field ActionBarLayout parentLayout and ActionBar actionBar
-        // if these field are not existent, it means that the BaseFragment is not valid or not supported
-        // find the classes: org.telegram.ui.ActionBar.ActionBarLayout, org.telegram.ui.ActionBar.ActionBar
-        sHostActionBarClass = hostBaseFragmentClass.getDeclaredField("actionBar").getType();
-        sHostActionBarLayoutClass = hostBaseFragmentClass.getDeclaredField("parentLayout").getType();
-        sHostBaseFragmentClass = hostBaseFragmentClass;
+        Objects.requireNonNull(hostBaseFragmentClass, "hostBaseFragmentClass");
+        if (sRttiProxyFragmentClass != null) {
+            if (sHostBaseFragmentClass != hostBaseFragmentClass) {
+                throw new IllegalStateException("Proxy already initialized for another host class loader");
+            }
+            return;
+        }
+        // parentLayout is a host navigation interface on current Telegram.
+        Class<?> actionBar = hostBaseFragmentClass.getDeclaredField("actionBar").getType();
+        Class<?> layout = hostBaseFragmentClass.getDeclaredField("parentLayout").getType();
         try {
             File dexFile = ProxyFragmentImplDexCreator.createProxyFragmentImplDex(hostBaseFragmentClass,
-                    sHostActionBarClass, sHostActionBarLayoutClass);
-            if (!dexFile.exists() || dexFile.length() == 0) {
-                throw new RuntimeException("create proxy fragment impl dex failed for unknown reason");
+                    actionBar, layout);
+            if (!dexFile.isFile() || dexFile.length() == 0 || !dexFile.setReadOnly()) {
+                throw new IOException("Proxy dex missing, empty or not read-only: " + dexFile);
             }
-            // load the dex file
             Context ctx = HostInfo.getApplication();
-            ClassLoader parentClassLoader = new HostFirstClassReferencer();
-            DexClassLoader dexClassLoader = new DexClassLoader(dexFile.getAbsolutePath(),
-                    ctx.getDir("dex_opt", 0).getAbsolutePath(), null, parentClassLoader);
-            // load class: cc.ioctl.tmoe.dynamic.ProxyFragmentImpl, exception: java.lang.ClassNotFoundException
-            sRttiProxyFragmentClass = dexClassLoader.loadClass("cc.ioctl.tmoe.dynamic.ProxyFragmentImpl");
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
+            ClassLoader parent = new HostFirstClassReferencer();
+            DexClassLoader loader = new DexClassLoader(dexFile.getAbsolutePath(),
+                    ctx.getDir("dex_opt", 0).getAbsolutePath(), null, parent);
+            Class<?> proxy = loader.loadClass("cc.ioctl.tmoe.dynamic.ProxyFragmentImpl");
+            if (proxy.getSuperclass() != hostBaseFragmentClass
+                    || !IProxyFragmentObject.class.isAssignableFrom(proxy)) {
+                throw new LinkageError("Proxy resolved classes from a different class loader");
+            }
+            proxy.getConstructor(ProxyFragmentRttiHandler.class, Bundle.class);
+            // Publish only after successful generation, loading and interface checks.
+            sHostActionBarClass = actionBar;
+            sHostActionBarLayoutClass = layout;
+            sHostBaseFragmentClass = hostBaseFragmentClass;
+            sRttiProxyFragmentClass = proxy;
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to create host Fragment proxy", e);
         }
     }
 
