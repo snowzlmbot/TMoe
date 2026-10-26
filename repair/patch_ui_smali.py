@@ -76,6 +76,11 @@ def change_ui(source):
         raise ValueError('Modern installPrepared entry point not found exactly once')
     result = result.replace(install_needle,
         'invoke-static {p0, p1}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->install(Lio/github/libxposed/api/XposedModule;Ljava/lang/ClassLoader;)V\n\n    ' + install_needle)
+    old_profile_call = 'invoke-static {p0, p1}, Lcc/ioctl/tmoe/startup/ModernUiHooks;->hookProfileRows(Lio/github/libxposed/api/XposedModule;Ljava/lang/ClassLoader;)V'
+    if result.count(old_profile_call) != 1:
+        raise ValueError('Expected one obsolete Profile row hook registration')
+    result = result.replace(old_profile_call, 'nop # replaced by ModernProfileIds exact 72299 pipeline')
+    changes['profile_ids'] = 'N2/j5 + i11; native c9 cell, exact a0 click and diff key'
     changes['configuration'] = 'SharedPreferences: no legacy Hook singleton initialization'
     return result, changes
 
