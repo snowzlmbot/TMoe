@@ -87,3 +87,34 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
+
+
+## Telegram Web 13.1.0 / API102 源码整合
+
+针对 `org.telegram.messenger.web` versionCode `72299`，当前实现已直接整合到 `app/src/main`：
+
+- `startup/ModernHookEntry.java`：LibXposed API 102 入口及精确宿主签名 Hook。
+- `startup/ModernFeatureHooks.java`：更新提示、剧透、回应、模糊、频道、贴纸和问候等功能。
+- `startup/ModernProfileIds.java`：ProfileActivity 原生 ID 行、64 位用户/群组/话题 ID、复制和差异刷新。
+- `startup/ModernPaidReactionGuard.java`：付费回应队列与独立 `TL_messages_sendPaidReaction` 边界。
+- `startup/ModernUiHooks.java` / `fragment/ModernSettingsFragment.java`：新版 `t91/f71/p91` 设置入口和现代设置页。
+- `util/HostSignatureRegistry.java`：72299 专用映射，保留旧版本分支。
+- `rtti/ProxyFragmentImplDexCreator.java`：动态 Fragment DEX 生成；参数描述符解析覆盖对象、数组和宽类型。
+
+正式版源码构建：
+
+```sh
+./gradlew --no-daemon --max-workers=2 :app:assembleProductionRelease
+```
+
+验证版（仅用于本地/CI 行为验收，含测试入口和账号/剪贴板测试）：
+
+```sh
+./gradlew --no-daemon --max-workers=2 :app:assembleVerificationRelease
+```
+
+生产构建不包含 `ModernRuntimeTests`、`ProfileLiveTest`、`VerificationRunner`、`SourceUiTest`、`VerificationNetworkSink` 或 `tmoe_selftest_nonce`。GitHub Actions 使用固定 Secrets 签名，禁止临时密钥。
+
+### 已验证边界
+
+源码版已通过 19 项宿主方法差分、源码动态设置页 13 个开关健康验证、用户ID资料页真实显示/复制/刷新/关闭恢复验证。视频真实音频播放、服务端广告、真实空聊天问候贴纸和付费回应服务端权限仍单独标注，不能由本地 fixture 冒充端到端通过。
