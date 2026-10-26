@@ -125,8 +125,8 @@ public final class ModernRuntimeTests {
             android.app.Dialog created=null;
             try{
                 enabled("ProhibitUpdates",false);call(popup,app,activity,update,ModernFeatureHooks.account());created=ModernFeatureHooks.lastUpdatePopup.get();
-                require(ModernFeatureHooks.updatePopupConstructions==before+1&&created!=null&&created.isShowing(),"original popup was not visible");created.getClass().getMethod("dismissInternal").invoke(created);
-                enabled("ProhibitUpdates",true);Object result=call(popup,app,activity,update,ModernFeatureHooks.account());
+                require(ModernFeatureHooks.updatePopupConstructions==before+1&&created!=null&&created.isShowing(),"original popup was not visible");
+                enabled("ProhibitUpdates",true);ModernFeatureHooks.onToggleChanged("ProhibitUpdates");require(!created.isShowing(),"enabling did not close existing update popup");Object result=call(popup,app,activity,update,ModernFeatureHooks.account());
                 require(Boolean.TRUE.equals(result)&&ModernFeatureHooks.updatePopupConstructions==before+1&&!created.isShowing(),"popup still created while enabled");
                 enabled("ProhibitUpdates",false);call(popup,app,activity,update,ModernFeatureHooks.account());created=ModernFeatureHooks.lastUpdatePopup.get();
                 require(ModernFeatureHooks.updatePopupConstructions==before+2&&created!=null&&created.isShowing(),"popup did not restore");
@@ -140,9 +140,12 @@ public final class ModernRuntimeTests {
             View created=null;android.view.ViewGroup parent=null;
             try{
                 enabled("ProhibitUpdates",false);call(overlay,activity,ModernFeatureHooks.account(),update,false);created=(View)get(activity,"C0");
-                require(created!=null&&created.getVisibility()==View.VISIBLE,"original mandatory overlay not shown");parent=(android.view.ViewGroup)created.getParent();created.setVisibility(View.GONE);parent.removeView(created);set(activity,"C0",null);
+                require(created!=null&&created.getVisibility()==View.VISIBLE,"original mandatory overlay not shown");parent=(android.view.ViewGroup)created.getParent();
+                enabled("ProhibitUpdates",true);ModernFeatureHooks.onToggleChanged("ProhibitUpdates");require(created.getVisibility()==View.GONE,"enabling did not hide existing mandatory overlay");
+                enabled("ProhibitUpdates",false);ModernFeatureHooks.onToggleChanged("ProhibitUpdates");require(created.getVisibility()==View.VISIBLE,"disabling did not restore mandatory overlay");
+                created.setVisibility(View.GONE);parent.removeView(created);set(activity,"C0",null);
                 enabled("ProhibitUpdates",true);call(overlay,activity,ModernFeatureHooks.account(),update,false);require(get(activity,"C0")==null,"mandatory overlay created while blocked");
-                return "real mandatory full-screen update visible -> no creation; synthetic overlay removed and original activity state restored";
+                return "existing mandatory overlay VISIBLE->GONE->VISIBLE by switch; enabled prevents creation; host state restored";
             }finally{Object current=get(activity,"C0");if(current instanceof View){View v=(View)current;v.setVisibility(View.GONE);if(v.getParent() instanceof android.view.ViewGroup)((android.view.ViewGroup)v.getParent()).removeView(v);}set(activity,"C0",before);}
         });
         test(rows,"sponsored_cached_model",()->{
@@ -163,12 +166,22 @@ public final class ModernRuntimeTests {
             enabled("ProhibitChatGreetings",true);call(measure,object,w,h);int on=sticker.getVisibility();require(off==View.VISIBLE&&on==View.GONE&&text.getVisibility()==View.GONE,"greeting children were not hidden");
             enabled("ProhibitChatGreetings",false);call(measure,object,w,h);require(sticker.getVisibility()==View.VISIBLE,"greeting view did not restore");return "real sticker View VISIBLE -> GONE -> VISIBLE; description removed";
         });
-        test(rows,"reactions_send_boundary_no_network",()->{
+        test(rows,"reactions_invalid_input_contract",()->{
             Object helper=raw("org.telegram.messenger.SendMessagesHelper");final int[] callbacks={0};Runnable done=()->callbacks[0]++;
             Method send=method("org.telegram.messenger.SendMessagesHelper","sendReaction",c("org.telegram.messenger.MessageObject"),ArrayList.class,c("vf.p0"),boolean.class,boolean.class,c("org.telegram.ui.ActionBar.r2"),Runnable.class);
-            enabled("ProhibitEnableReactions",false);call(send,helper,null,new ArrayList<>(),null,false,false,null,done);int off=callbacks[0];
-            enabled("ProhibitEnableReactions",true);call(send,helper,null,new ArrayList<>(),null,false,false,null,done);int on=callbacks[0];
-            require(off==0&&on==1,"send hook did not short-circuit/complete callback");return "null-message safety sample: original no-op -> blocked callback completed; no sendRequest";
+            for(boolean state:new boolean[]{false,true,false}){enabled("ProhibitEnableReactions",state);call(send,helper,null,new ArrayList<>(),null,false,false,null,done);}
+            require(callbacks[0]==0,"invalid-input path invented callback");return "null input no-op preserved 0->0->0; not claimed as valid-send coverage";
+        });
+        test(rows,"reactions_valid_input_send_boundary",()->{
+            try(VerificationNetworkSink sink=new VerificationNetworkSink()){
+                Object mo=raw("org.telegram.messenger.MessageObject"),tl=instance("org.telegram.tgnet.TLRPC$TL_message"),peer=instance("org.telegram.tgnet.TLRPC$TL_peerUser");
+                set(peer,"user_id",987654321L);set(tl,"peer_id",peer);set(tl,"dialog_id",987654321L);set(tl,"id",123);set(mo,"messageOwner",tl);
+                Object fragment=raw("org.telegram.ui.ko");Method send=method("org.telegram.messenger.SendMessagesHelper","sendReaction",c("org.telegram.messenger.MessageObject"),ArrayList.class,c("vf.p0"),boolean.class,boolean.class,c("org.telegram.ui.ActionBar.r2"),Runnable.class);
+                enabled("ProhibitEnableReactions",false);call(send,sink.helper,mo,new ArrayList<>(),null,false,false,fragment,null);require(sink.requests.size()==1,"valid baseline never reached sendRequest");
+                enabled("ProhibitEnableReactions",true);call(send,sink.helper,mo,new ArrayList<>(),null,false,false,fragment,null);require(sink.requests.size()==1,"enabled sent valid reaction");
+                enabled("ProhibitEnableReactions",false);call(send,sink.helper,mo,new ArrayList<>(),null,false,false,fragment,null);require(sink.requests.size()==2,"valid send did not restore");
+                require(sink.requests.get(0).getClass().getSimpleName().equals("TL_messages_sendReaction"),"wrong request sink payload");return "valid message + fragment; request sink 1->0->1; no request reached actual network";
+            }
         });
         test(rows,"channel_switch_panel",()->{
             Object helper=raw("org.telegram.ui.hq");set(helper,"R",2);set(helper,"Q",false);Method m=method("org.telegram.ui.hq","e");
@@ -203,7 +216,10 @@ public final class ModernRuntimeTests {
             require(Boolean.TRUE.equals(call(method("org.telegram.ui.i11","D",c("n4.h1")),adapter,holder)),"ID row not enabled for click");
             android.util.SparseIntArray sparse=new android.util.SparseIntArray();Object diff=c("org.telegram.ui.w01").getDeclaredConstructor(c("org.telegram.ui.ProfileActivity")).newInstance(profile);
             call(method("org.telegram.ui.w01","f",android.util.SparseIntArray.class),diff,sparse);require(sparse.get(2)==ModernProfileIds.DIFF_KEY,"ID missing from native diff snapshot");
-            return "count8->9; only later row indexes shift; native c9 cell bound; unique viewType; enabled; stable diff key; no clipboard writes";
+            enabled("ShowIdInProfile",false);require(!ModernProfileIds.validBinding(profile,row),"old bound ID listener remains eligible when disabled");
+            enabled("ShowIdInProfile",true);require(ModernProfileIds.validBinding(profile,row),"current binding did not reactivate");
+            ModernProfileIds.insertAfterRebuild(profile);require(!ModernProfileIds.validBinding(profile,row),"stale ID row still eligible after replacement");
+            return "count8->9; native c9 binding/diff key; current binding on-off-on verified; replaced binding invalid; no clipboard writes";
         });
         // Other environment-dependent behavior is explicitly not certified by this suite.
         try{
