@@ -125,13 +125,13 @@ public final class ModernRuntimeTests {
             android.app.Dialog created=null;
             try{
                 enabled("ProhibitUpdates",false);call(popup,app,activity,update,ModernFeatureHooks.account());created=ModernFeatureHooks.lastUpdatePopup.get();
-                require(ModernFeatureHooks.updatePopupConstructions==before+1&&created!=null&&created.isShowing(),"original popup was not visible");created.dismiss();
+                require(ModernFeatureHooks.updatePopupConstructions==before+1&&created!=null&&created.isShowing(),"original popup was not visible");created.getClass().getMethod("dismissInternal").invoke(created);
                 enabled("ProhibitUpdates",true);Object result=call(popup,app,activity,update,ModernFeatureHooks.account());
                 require(Boolean.TRUE.equals(result)&&ModernFeatureHooks.updatePopupConstructions==before+1&&!created.isShowing(),"popup still created while enabled");
                 enabled("ProhibitUpdates",false);call(popup,app,activity,update,ModernFeatureHooks.account());created=ModernFeatureHooks.lastUpdatePopup.get();
                 require(ModernFeatureHooks.updatePopupConstructions==before+2&&created!=null&&created.isShowing(),"popup did not restore");
                 return "real update sheet visible -> no construction -> visible; dismissed, no download clicked";
-            }finally{if(created!=null&&created.isShowing())created.dismiss();}
+            }finally{if(created!=null&&created.isShowing())created.getClass().getMethod("dismissInternal").invoke(created);}
         });
         test(rows,"updates_mandatory_overlay_blocked",()->{
             Object update=instance("org.telegram.tgnet.TLRPC$TL_help_appUpdate");set(update,"can_not_skip",true);set(update,"text","local test only");
@@ -156,7 +156,7 @@ public final class ModernRuntimeTests {
         });
         test(rows,"greeting_real_children",()->{
             Class<?> viewClass=c("org.telegram.ui.Components.ap");
-            enabled("ProhibitChatGreetings",false);Object object=viewClass.getDeclaredConstructor(android.content.Context.class,int.class,c("org.telegram.tgnet.TLRPC$Document"),c("org.telegram.ui.ActionBar.j6")).newInstance(activity,ModernFeatureHooks.account(),instance("org.telegram.tgnet.TLRPC$TL_document"),null);
+            enabled("ProhibitChatGreetings",false);Object object=c("org.telegram.ui.aj").getDeclaredConstructor(c("org.telegram.ui.ko"),Activity.class,int.class,c("org.telegram.tgnet.TLRPC$Document"),c("org.telegram.ui.ActionBar.j6")).newInstance(null,activity,ModernFeatureHooks.account(),instance("org.telegram.tgnet.TLRPC$TL_document"),null);
             View view=(View)object;Method measure=method(viewClass.getName(),"onMeasure",int.class,int.class);
             int w=View.MeasureSpec.makeMeasureSpec(1000,View.MeasureSpec.EXACTLY),h=View.MeasureSpec.makeMeasureSpec(1800,View.MeasureSpec.AT_MOST);
             call(measure,object,w,h);View text=(View)get(object,"c"),sticker=(View)get(object,"h");int off=sticker.getVisibility();

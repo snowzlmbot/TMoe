@@ -416,7 +416,7 @@
 .end method
 
 .method static synthetic lambda$run$10(Landroid/app/Activity;)Ljava/lang/String;
-    .locals 15
+    .locals 17
     .annotation system Ldalvik/annotation/Throws;
         value = {
             Ljava/lang/Throwable;
@@ -424,292 +424,335 @@
     .end annotation
 
     .line 121
-    const-string v0, "ProhibitUpdates"
+    move-object/from16 v0, p0
 
-    const-string v1, "org.telegram.messenger.ApplicationLoader"
+    const-string v1, "dismissInternal"
 
-    const-string v2, "applicationLoaderInstance"
+    const-string v2, "ProhibitUpdates"
 
-    invoke-static {v1, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->getStatic(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+    const-string v3, "org.telegram.messenger.ApplicationLoader"
 
-    move-result-object v1
+    const-string v4, "applicationLoaderInstance"
 
-    const-string v2, "org.telegram.tgnet.TLRPC$TL_help_appUpdate"
-
-    invoke-static {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->instance(Ljava/lang/String;)Ljava/lang/Object;
+    invoke-static {v3, v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->getStatic(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
 
     move-result-object v3
 
-    .line 122
-    const-class v4, Landroid/content/Context;
-
-    invoke-static {v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
-
-    move-result-object v2
-
-    sget-object v5, Ljava/lang/Integer;->TYPE:Ljava/lang/Class;
-
-    filled-new-array {v4, v2, v5}, [Ljava/lang/Class;
-
-    move-result-object v2
-
-    const-string v4, "org.telegram.messenger.ApplicationLoaderImpl"
-
-    const-string v5, "showUpdateAppPopup"
-
-    invoke-static {v4, v5, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->method(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
-
-    move-result-object v2
-
-    .line 123
-    const-string v4, "org.telegram.tgnet.TLRPC$TL_document"
+    const-string v4, "org.telegram.tgnet.TLRPC$TL_help_appUpdate"
 
     invoke-static {v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->instance(Ljava/lang/String;)Ljava/lang/Object;
 
+    move-result-object v5
+
+    .line 122
+    const-class v6, Landroid/content/Context;
+
+    invoke-static {v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
+
     move-result-object v4
 
-    const-string v5, "document"
+    sget-object v7, Ljava/lang/Integer;->TYPE:Ljava/lang/Class;
 
-    invoke-static {v3, v5, v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+    filled-new-array {v6, v4, v7}, [Ljava/lang/Class;
 
-    const-string v4, "version"
+    move-result-object v4
 
-    const-string v5, "99.99-local-test"
+    const-string v6, "org.telegram.messenger.ApplicationLoaderImpl"
 
-    invoke-static {v3, v4, v5}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+    const-string v7, "showUpdateAppPopup"
 
-    const-string v4, "text"
+    invoke-static {v6, v7, v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->method(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
 
-    const-string v5, "Local test: no download requested"
+    move-result-object v4
 
-    invoke-static {v3, v4, v5}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+    .line 123
+    const-string v6, "org.telegram.tgnet.TLRPC$TL_document"
+
+    invoke-static {v6}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->instance(Ljava/lang/String;)Ljava/lang/Object;
+
+    move-result-object v6
+
+    const-string v7, "document"
+
+    invoke-static {v5, v7, v6}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const-string v6, "version"
+
+    const-string v7, "99.99-local-test"
+
+    invoke-static {v5, v6, v7}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
+
+    const-string v6, "text"
+
+    const-string v7, "Local test: no download requested"
+
+    invoke-static {v5, v6, v7}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->set(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;)V
 
     .line 124
-    sget-wide v4, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->updatePopupConstructions:J
+    sget-wide v6, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->updatePopupConstructions:J
 
     .line 125
     nop
 
     .line 127
-    const/4 v6, 0x0
+    const/4 v8, 0x0
 
-    const/4 v7, 0x0
+    const/4 v9, 0x0
 
     :try_start_0
-    invoke-static {v0, v7}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->enabled(Ljava/lang/String;Z)V
+    invoke-static {v2, v8}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->enabled(Ljava/lang/String;Z)V
 
     invoke-static {}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->account()I
 
-    move-result v8
+    move-result v10
 
-    invoke-static {v8}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    invoke-static {v10}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
 
-    move-result-object v8
+    move-result-object v10
 
-    filled-new-array {p0, v3, v8}, [Ljava/lang/Object;
+    filled-new-array {v0, v5, v10}, [Ljava/lang/Object;
 
-    move-result-object v8
+    move-result-object v10
 
-    invoke-static {v2, v1, v8}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-static {v4, v3, v10}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
 
-    sget-object v8, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->lastUpdatePopup:Ljava/lang/ref/WeakReference;
+    sget-object v10, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->lastUpdatePopup:Ljava/lang/ref/WeakReference;
 
-    invoke-virtual {v8}, Ljava/lang/ref/WeakReference;->get()Ljava/lang/Object;
+    invoke-virtual {v10}, Ljava/lang/ref/WeakReference;->get()Ljava/lang/Object;
 
-    move-result-object v8
+    move-result-object v10
 
-    check-cast v8, Landroid/app/Dialog;
+    check-cast v10, Landroid/app/Dialog;
     :try_end_0
     .catchall {:try_start_0 .. :try_end_0} :catchall_1
 
     .line 128
     :try_start_1
-    sget-wide v9, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->updatePopupConstructions:J
+    sget-wide v11, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->updatePopupConstructions:J
 
-    const-wide/16 v11, 0x1
+    const-wide/16 v13, 0x1
 
-    add-long/2addr v11, v4
+    add-long/2addr v13, v6
 
-    cmp-long v6, v9, v11
+    cmp-long v9, v11, v13
 
-    const/4 v9, 0x1
+    const/4 v11, 0x1
 
-    if-nez v6, :cond_0
+    if-nez v9, :cond_0
 
-    if-eqz v8, :cond_0
+    if-eqz v10, :cond_0
 
-    invoke-virtual {v8}, Landroid/app/Dialog;->isShowing()Z
+    invoke-virtual {v10}, Landroid/app/Dialog;->isShowing()Z
 
-    move-result v6
+    move-result v9
 
-    if-eqz v6, :cond_0
+    if-eqz v9, :cond_0
 
-    move v6, v9
+    move v9, v11
 
     goto :goto_0
 
     :cond_0
-    move v6, v7
+    move v9, v8
 
     :goto_0
-    const-string v10, "original popup was not visible"
+    const-string v12, "original popup was not visible"
 
-    invoke-static {v6, v10}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+    invoke-static {v9, v12}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
 
-    invoke-virtual {v8}, Landroid/app/Dialog;->dismiss()V
+    invoke-virtual {v10}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+
+    move-result-object v9
+
+    new-array v12, v8, [Ljava/lang/Class;
+
+    invoke-virtual {v9, v1, v12}, Ljava/lang/Class;->getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v9
+
+    new-array v12, v8, [Ljava/lang/Object;
+
+    invoke-virtual {v9, v10, v12}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
 
     .line 129
-    invoke-static {v0, v9}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->enabled(Ljava/lang/String;Z)V
+    invoke-static {v2, v11}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->enabled(Ljava/lang/String;Z)V
 
     invoke-static {}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->account()I
 
-    move-result v6
+    move-result v9
 
-    invoke-static {v6}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    invoke-static {v9}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
 
-    move-result-object v6
+    move-result-object v9
 
-    filled-new-array {p0, v3, v6}, [Ljava/lang/Object;
+    filled-new-array {v0, v5, v9}, [Ljava/lang/Object;
 
-    move-result-object v6
+    move-result-object v9
 
-    invoke-static {v2, v1, v6}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-static {v4, v3, v9}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
 
-    move-result-object v6
+    move-result-object v9
 
     .line 130
-    sget-object v10, Ljava/lang/Boolean;->TRUE:Ljava/lang/Boolean;
+    sget-object v12, Ljava/lang/Boolean;->TRUE:Ljava/lang/Boolean;
 
-    invoke-virtual {v10, v6}, Ljava/lang/Boolean;->equals(Ljava/lang/Object;)Z
+    invoke-virtual {v12, v9}, Ljava/lang/Boolean;->equals(Ljava/lang/Object;)Z
 
-    move-result v6
+    move-result v9
 
-    if-eqz v6, :cond_1
+    if-eqz v9, :cond_1
 
-    sget-wide v13, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->updatePopupConstructions:J
+    sget-wide v15, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->updatePopupConstructions:J
 
-    cmp-long v6, v13, v11
+    cmp-long v9, v15, v13
 
-    if-nez v6, :cond_1
+    if-nez v9, :cond_1
 
-    invoke-virtual {v8}, Landroid/app/Dialog;->isShowing()Z
+    invoke-virtual {v10}, Landroid/app/Dialog;->isShowing()Z
 
-    move-result v6
+    move-result v9
 
-    if-nez v6, :cond_1
+    if-nez v9, :cond_1
 
-    move v6, v9
+    move v9, v11
 
     goto :goto_1
 
     :cond_1
-    move v6, v7
+    move v9, v8
 
     :goto_1
-    const-string v10, "popup still created while enabled"
+    const-string v12, "popup still created while enabled"
 
-    invoke-static {v6, v10}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+    invoke-static {v9, v12}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
 
     .line 131
-    invoke-static {v0, v7}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->enabled(Ljava/lang/String;Z)V
+    invoke-static {v2, v8}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->enabled(Ljava/lang/String;Z)V
 
     invoke-static {}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->account()I
 
-    move-result v0
+    move-result v2
 
-    invoke-static {v0}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+    invoke-static {v2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    move-result-object v2
+
+    filled-new-array {v0, v5, v2}, [Ljava/lang/Object;
 
     move-result-object v0
 
-    filled-new-array {p0, v3, v0}, [Ljava/lang/Object;
+    invoke-static {v4, v3, v0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
 
-    move-result-object p0
+    sget-object v0, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->lastUpdatePopup:Ljava/lang/ref/WeakReference;
 
-    invoke-static {v2, v1, p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->call(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+    invoke-virtual {v0}, Ljava/lang/ref/WeakReference;->get()Ljava/lang/Object;
 
-    sget-object p0, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->lastUpdatePopup:Ljava/lang/ref/WeakReference;
+    move-result-object v0
 
-    invoke-virtual {p0}, Ljava/lang/ref/WeakReference;->get()Ljava/lang/Object;
+    move-object v9, v0
 
-    move-result-object p0
-
-    move-object v6, p0
-
-    check-cast v6, Landroid/app/Dialog;
+    check-cast v9, Landroid/app/Dialog;
     :try_end_1
     .catchall {:try_start_1 .. :try_end_1} :catchall_0
 
     .line 132
     :try_start_2
-    sget-wide v0, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->updatePopupConstructions:J
+    sget-wide v2, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->updatePopupConstructions:J
 
-    const-wide/16 v2, 0x2
+    const-wide/16 v4, 0x2
 
-    add-long/2addr v4, v2
+    add-long/2addr v6, v4
 
-    cmp-long p0, v0, v4
+    cmp-long v0, v2, v6
 
-    if-nez p0, :cond_2
+    if-nez v0, :cond_2
 
-    if-eqz v6, :cond_2
+    if-eqz v9, :cond_2
 
-    invoke-virtual {v6}, Landroid/app/Dialog;->isShowing()Z
+    invoke-virtual {v9}, Landroid/app/Dialog;->isShowing()Z
 
-    move-result p0
+    move-result v0
 
-    if-eqz p0, :cond_2
+    if-eqz v0, :cond_2
 
-    move v7, v9
+    goto :goto_2
 
     :cond_2
-    const-string p0, "popup did not restore"
+    move v11, v8
 
-    invoke-static {v7, p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
+    :goto_2
+    const-string v0, "popup did not restore"
+
+    invoke-static {v11, v0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->require(ZLjava/lang/String;)V
 
     .line 133
-    const-string p0, "real update sheet visible -> no construction -> visible; dismissed, no download clicked"
+    const-string v0, "real update sheet visible -> no construction -> visible; dismissed, no download clicked"
     :try_end_2
     .catchall {:try_start_2 .. :try_end_2} :catchall_1
 
     .line 134
-    if-eqz v6, :cond_3
+    if-eqz v9, :cond_3
 
-    invoke-virtual {v6}, Landroid/app/Dialog;->isShowing()Z
+    invoke-virtual {v9}, Landroid/app/Dialog;->isShowing()Z
 
-    move-result v0
+    move-result v2
 
-    if-eqz v0, :cond_3
+    if-eqz v2, :cond_3
 
-    invoke-virtual {v6}, Landroid/app/Dialog;->dismiss()V
+    invoke-virtual {v9}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+
+    move-result-object v2
+
+    new-array v3, v8, [Ljava/lang/Class;
+
+    invoke-virtual {v2, v1, v3}, Ljava/lang/Class;->getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v1
+
+    new-array v2, v8, [Ljava/lang/Object;
+
+    invoke-virtual {v1, v9, v2}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
 
     .line 133
     :cond_3
-    return-object p0
+    return-object v0
 
     .line 134
     :catchall_0
-    move-exception p0
+    move-exception v0
 
-    move-object v6, v8
+    move-object v9, v10
 
-    goto :goto_2
+    goto :goto_3
 
     :catchall_1
-    move-exception p0
+    move-exception v0
 
-    :goto_2
-    if-eqz v6, :cond_4
+    :goto_3
+    if-eqz v9, :cond_4
 
-    invoke-virtual {v6}, Landroid/app/Dialog;->isShowing()Z
+    invoke-virtual {v9}, Landroid/app/Dialog;->isShowing()Z
 
-    move-result v0
+    move-result v2
 
-    if-eqz v0, :cond_4
+    if-eqz v2, :cond_4
 
-    invoke-virtual {v6}, Landroid/app/Dialog;->dismiss()V
+    invoke-virtual {v9}, Ljava/lang/Object;->getClass()Ljava/lang/Class;
+
+    move-result-object v2
+
+    new-array v3, v8, [Ljava/lang/Class;
+
+    invoke-virtual {v2, v1, v3}, Ljava/lang/Class;->getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
+
+    move-result-object v1
+
+    new-array v2, v8, [Ljava/lang/Object;
+
+    invoke-virtual {v1, v9, v2}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
 
     :cond_4
-    throw p0
+    throw v0
 .end method
 
 .method static synthetic lambda$run$11(Landroid/app/Activity;)Ljava/lang/String;
@@ -1165,27 +1208,39 @@
 
     invoke-static {v1, v2}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->enabled(Ljava/lang/String;Z)V
 
-    const-class v3, Landroid/content/Context;
+    const-string v3, "org.telegram.ui.aj"
 
-    sget-object v4, Ljava/lang/Integer;->TYPE:Ljava/lang/Class;
-
-    const-string v5, "org.telegram.tgnet.TLRPC$Document"
-
-    invoke-static {v5}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
-
-    move-result-object v5
-
-    const-string v6, "org.telegram.ui.ActionBar.j6"
-
-    invoke-static {v6}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
-
-    move-result-object v6
-
-    filled-new-array {v3, v4, v5, v6}, [Ljava/lang/Class;
+    invoke-static {v3}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
 
     move-result-object v3
 
-    invoke-virtual {v0, v3}, Ljava/lang/Class;->getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+    const-string v4, "org.telegram.ui.ko"
+
+    invoke-static {v4}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v4
+
+    const-class v5, Landroid/app/Activity;
+
+    sget-object v6, Ljava/lang/Integer;->TYPE:Ljava/lang/Class;
+
+    const-string v7, "org.telegram.tgnet.TLRPC$Document"
+
+    invoke-static {v7}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v7
+
+    const-string v8, "org.telegram.ui.ActionBar.j6"
+
+    invoke-static {v8}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->c(Ljava/lang/String;)Ljava/lang/Class;
+
+    move-result-object v8
+
+    filled-new-array {v4, v5, v6, v7, v8}, [Ljava/lang/Class;
+
+    move-result-object v4
+
+    invoke-virtual {v3, v4}, Ljava/lang/Class;->getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
 
     move-result-object v3
 
@@ -1205,7 +1260,7 @@
 
     const/4 v6, 0x0
 
-    filled-new-array {p0, v4, v5, v6}, [Ljava/lang/Object;
+    filled-new-array {v6, p0, v4, v5, v6}, [Ljava/lang/Object;
 
     move-result-object p0
 
