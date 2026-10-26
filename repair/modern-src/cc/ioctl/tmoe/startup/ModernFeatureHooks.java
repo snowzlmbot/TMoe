@@ -149,8 +149,14 @@ public final class ModernFeatureHooks {
         lastTestNonce=nonce;
         a.getIntent().removeExtra("tmoe_selftest_nonce");
         new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(()->{
-            String report=ModernRuntimeTests.run(a);
-            Log.i("TMoe-TEST",report);
+            if(nonce.startsWith("profile-live:")) {
+                android.app.KeyguardManager keyguard=a.getSystemService(android.app.KeyguardManager.class);
+                if(keyguard!=null&&keyguard.isKeyguardLocked()){Log.w("TMoe-ID","LIVE_PROFILE_TEST blocked by keyguard");return;}
+                ProfileLiveTest.openAndTest(a);
+            } else {
+                String report=ModernRuntimeTests.run(a);
+                Log.i("TMoe-TEST",report);
+            }
         },800);
     }
     private static void hookUpdates(XposedModule module)throws Exception{

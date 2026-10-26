@@ -160,7 +160,7 @@
 .method static account()I
     .locals 2
 
-    .line 197
+    .line 203
     :try_start_0
     const-string v0, "org.telegram.messenger.UserConfig"
 
@@ -407,7 +407,7 @@
 .method private static hideGreeting(Landroid/view/View;)V
     .locals 5
 
-    .line 186
+    .line 192
     :try_start_0
     const-string v0, "c"
 
@@ -476,7 +476,7 @@
 .method static hideMandatory(Landroid/app/Activity;)V
     .locals 2
 
-    .line 183
+    .line 189
     :try_start_0
     const-string v0, "C0"
 
@@ -525,7 +525,7 @@
 .method private static hideReaction(Landroid/view/View;)V
     .locals 2
 
-    .line 184
+    .line 190
     sget-object v0, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->reactionViews:Ljava/util/Map;
 
     invoke-interface {v0, p0}, Ljava/util/Map;->containsKey(Ljava/lang/Object;)Z
@@ -591,7 +591,7 @@
         }
     .end annotation
 
-    .line 157
+    .line 163
     const-string v0, "org.telegram.ui.Components.i81"
 
     invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->cls(Ljava/lang/String;)Ljava/lang/Class;
@@ -616,7 +616,7 @@
 
     move-result-object v0
 
-    .line 158
+    .line 164
     invoke-virtual {p0, v0}, Lio/github/libxposed/api/XposedModule;->hook(Ljava/lang/reflect/Executable;)Lio/github/libxposed/api/XposedInterface$HookBuilder;
 
     move-result-object v0
@@ -633,14 +633,14 @@
 
     invoke-interface {v0, v1}, Lio/github/libxposed/api/XposedInterface$HookBuilder;->intercept(Lio/github/libxposed/api/XposedInterface$Hooker;)Lio/github/libxposed/api/XposedInterface$HookHandle;
 
-    .line 159
+    .line 165
     const-string v0, "org.telegram.ui.Components.j81"
 
     invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->cls(Ljava/lang/String;)Ljava/lang/Class;
 
     move-result-object v0
 
-    .line 160
+    .line 166
     const-class v1, Landroid/app/Activity;
 
     const-class v2, Landroid/view/ViewGroup;
@@ -653,7 +653,7 @@
 
     move-result-object v1
 
-    .line 161
+    .line 167
     invoke-virtual {p0, v1}, Lio/github/libxposed/api/XposedModule;->hook(Ljava/lang/reflect/Executable;)Lio/github/libxposed/api/XposedInterface$HookBuilder;
 
     move-result-object v1
@@ -670,7 +670,7 @@
 
     invoke-interface {v1, v2}, Lio/github/libxposed/api/XposedInterface$HookBuilder;->intercept(Lio/github/libxposed/api/XposedInterface$Hooker;)Lio/github/libxposed/api/XposedInterface$HookHandle;
 
-    .line 162
+    .line 168
     const-string v1, "updateFileProgress"
 
     const-string v2, "createUpdateUI"
@@ -692,7 +692,7 @@
 
     aget-object v6, v1, v5
 
-    .line 163
+    .line 169
     invoke-virtual {v6, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
 
     move-result v7
@@ -737,7 +737,7 @@
 
     aput-object v8, v7, v4
 
-    .line 164
+    .line 170
     :goto_1
     invoke-virtual {v0, v6, v7}, Ljava/lang/Class;->getDeclaredMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
 
@@ -775,15 +775,15 @@
 
     invoke-interface {v6, v8}, Lio/github/libxposed/api/XposedInterface$HookBuilder;->intercept(Lio/github/libxposed/api/XposedInterface$Hooker;)Lio/github/libxposed/api/XposedInterface$HookHandle;
 
-    .line 168
+    .line 174
     invoke-virtual {p0, v7}, Lio/github/libxposed/api/XposedModule;->deoptimize(Ljava/lang/reflect/Executable;)Z
 
-    .line 162
+    .line 168
     add-int/lit8 v5, v5, 0x1
 
     goto :goto_0
 
-    .line 170
+    .line 176
     :cond_2
     const-string v0, "org.telegram.ui.LaunchActivity"
 
@@ -799,7 +799,7 @@
 
     move-result-object v0
 
-    .line 171
+    .line 177
     invoke-virtual {p0, v0}, Lio/github/libxposed/api/XposedModule;->hook(Ljava/lang/reflect/Executable;)Lio/github/libxposed/api/XposedInterface$HookBuilder;
 
     move-result-object v1
@@ -816,10 +816,10 @@
 
     invoke-interface {v1, v2}, Lio/github/libxposed/api/XposedInterface$HookBuilder;->intercept(Lio/github/libxposed/api/XposedInterface$Hooker;)Lio/github/libxposed/api/XposedInterface$HookHandle;
 
-    .line 175
+    .line 181
     invoke-virtual {p0, v0}, Lio/github/libxposed/api/XposedModule;->deoptimize(Ljava/lang/reflect/Executable;)Z
 
-    .line 176
+    .line 182
     return-void
 .end method
 
@@ -1602,7 +1602,7 @@
         }
     .end annotation
 
-    .line 158
+    .line 164
     invoke-interface {p0}, Lio/github/libxposed/api/XposedInterface$Chain;->proceed()Ljava/lang/Object;
 
     move-result-object v0
@@ -1638,7 +1638,7 @@
         }
     .end annotation
 
-    .line 161
+    .line 167
     invoke-interface {p0}, Lio/github/libxposed/api/XposedInterface$Chain;->proceed()Ljava/lang/Object;
 
     move-result-object v0
@@ -1668,7 +1668,7 @@
         }
     .end annotation
 
-    .line 165
+    .line 171
     invoke-interface {p0}, Lio/github/libxposed/api/XposedInterface$Chain;->getThisObject()Ljava/lang/Object;
 
     move-result-object v0
@@ -1683,7 +1683,7 @@
 
     invoke-interface {v1, v0, v2}, Ljava/util/Map;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 
-    .line 166
+    .line 172
     const-string v1, "ProhibitUpdates"
 
     invoke-static {v1}, Lcc/ioctl/tmoe/startup/ModernPreferences;->isEnabled(Ljava/lang/String;)Z
@@ -1698,7 +1698,7 @@
 
     return-object p0
 
-    .line 167
+    .line 173
     :cond_0
     invoke-interface {p0}, Lio/github/libxposed/api/XposedInterface$Chain;->proceed()Ljava/lang/Object;
 
@@ -1715,7 +1715,7 @@
         }
     .end annotation
 
-    .line 172
+    .line 178
     invoke-interface {p0}, Lio/github/libxposed/api/XposedInterface$Chain;->getThisObject()Ljava/lang/Object;
 
     move-result-object v0
@@ -1732,7 +1732,7 @@
 
     invoke-interface {v1, v0, v2}, Ljava/util/Map;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
 
-    .line 173
+    .line 179
     const-string v1, "ProhibitUpdates"
 
     invoke-static {v1}, Lcc/ioctl/tmoe/startup/ModernPreferences;->isEnabled(Ljava/lang/String;)Z
@@ -1743,7 +1743,7 @@
 
     invoke-static {v0}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->hideMandatory(Landroid/app/Activity;)V
 
-    .line 174
+    .line 180
     :cond_0
     invoke-interface {p0}, Lio/github/libxposed/api/XposedInterface$Chain;->proceed()Ljava/lang/Object;
 
@@ -2113,20 +2113,64 @@
     return-object p0
 .end method
 
-.method static synthetic lambda$maybeRunExplicitTest$10(Landroid/app/Activity;)V
+.method static synthetic lambda$maybeRunExplicitTest$10(Ljava/lang/String;Landroid/app/Activity;)V
     .locals 1
 
     .line 152
-    invoke-static {p0}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->run(Landroid/app/Activity;)Ljava/lang/String;
+    const-string v0, "profile-live:"
+
+    invoke-virtual {p0, v0}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
+
+    move-result p0
+
+    if-eqz p0, :cond_1
+
+    .line 153
+    const-class p0, Landroid/app/KeyguardManager;
+
+    invoke-virtual {p1, p0}, Landroid/app/Activity;->getSystemService(Ljava/lang/Class;)Ljava/lang/Object;
 
     move-result-object p0
 
-    .line 153
-    const-string v0, "TMoe-TEST"
-
-    invoke-static {v0, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+    check-cast p0, Landroid/app/KeyguardManager;
 
     .line 154
+    if-eqz p0, :cond_0
+
+    invoke-virtual {p0}, Landroid/app/KeyguardManager;->isKeyguardLocked()Z
+
+    move-result p0
+
+    if-eqz p0, :cond_0
+
+    const-string p0, "TMoe-ID"
+
+    const-string p1, "LIVE_PROFILE_TEST blocked by keyguard"
+
+    invoke-static {p0, p1}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
+
+    return-void
+
+    .line 155
+    :cond_0
+    invoke-static {p1}, Lcc/ioctl/tmoe/startup/ProfileLiveTest;->openAndTest(Landroid/app/Activity;)V
+
+    .line 156
+    goto :goto_0
+
+    .line 157
+    :cond_1
+    invoke-static {p1}, Lcc/ioctl/tmoe/startup/ModernRuntimeTests;->run(Landroid/app/Activity;)Ljava/lang/String;
+
+    move-result-object p0
+
+    .line 158
+    const-string p1, "TMoe-TEST"
+
+    invoke-static {p1, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 160
+    :goto_0
     return-void
 .end method
 
@@ -2227,7 +2271,7 @@
 .end method
 
 .method private static maybeRunExplicitTest(Landroid/app/Activity;)V
-    .locals 4
+    .locals 5
 
     .line 147
     invoke-virtual {p0}, Landroid/app/Activity;->getIntent()Landroid/content/Intent;
@@ -2266,28 +2310,28 @@
     .line 150
     invoke-virtual {p0}, Landroid/app/Activity;->getIntent()Landroid/content/Intent;
 
-    move-result-object v0
+    move-result-object v2
 
-    invoke-virtual {v0, v1}, Landroid/content/Intent;->removeExtra(Ljava/lang/String;)V
+    invoke-virtual {v2, v1}, Landroid/content/Intent;->removeExtra(Ljava/lang/String;)V
 
     .line 151
-    new-instance v0, Landroid/os/Handler;
+    new-instance v1, Landroid/os/Handler;
 
     invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
 
-    move-result-object v1
+    move-result-object v2
 
-    invoke-direct {v0, v1}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
+    invoke-direct {v1, v2}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
 
-    new-instance v1, Lcc/ioctl/tmoe/startup/ModernFeatureHooks$$ExternalSyntheticLambda1;
+    new-instance v2, Lcc/ioctl/tmoe/startup/ModernFeatureHooks$$ExternalSyntheticLambda1;
 
-    invoke-direct {v1, p0}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks$$ExternalSyntheticLambda1;-><init>(Landroid/app/Activity;)V
+    invoke-direct {v2, v0, p0}, Lcc/ioctl/tmoe/startup/ModernFeatureHooks$$ExternalSyntheticLambda1;-><init>(Ljava/lang/String;Landroid/app/Activity;)V
 
-    const-wide/16 v2, 0x320
+    const-wide/16 v3, 0x320
 
-    invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    invoke-virtual {v1, v2, v3, v4}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
 
-    .line 155
+    .line 161
     return-void
 
     .line 148
@@ -2299,7 +2343,7 @@
 .method public static onToggleChanged(Ljava/lang/String;)V
     .locals 7
 
-    .line 189
+    .line 195
     const-string v0, "ProhibitEnableReactions"
 
     invoke-virtual {p0, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
@@ -2364,7 +2408,7 @@
 
     throw p0
 
-    .line 190
+    .line 196
     :cond_1
     :goto_1
     const-string v0, "ProhibitChatGreetings"
@@ -2431,7 +2475,7 @@
 
     throw p0
 
-    .line 191
+    .line 197
     :cond_3
     :goto_3
     const-string v0, "ShowIdInProfile"
@@ -2444,7 +2488,7 @@
 
     invoke-static {}, Lcc/ioctl/tmoe/startup/ModernProfileIds;->refresh()V
 
-    .line 192
+    .line 198
     :cond_4
     const-string v0, "ProhibitUpdates"
 
@@ -2454,7 +2498,7 @@
 
     if-eqz v0, :cond_9
 
-    .line 193
+    .line 199
     sget-object v0, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->updateLayouts:Ljava/util/Map;
 
     monitor-enter v0
@@ -2558,7 +2602,7 @@
     :try_end_4
     .catchall {:try_start_4 .. :try_end_4} :catchall_4
 
-    .line 194
+    .line 200
     sget-object v1, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->activities:Ljava/util/Map;
 
     monitor-enter v1
@@ -2616,7 +2660,7 @@
 
     throw p0
 
-    .line 193
+    .line 199
     :catchall_4
     move-exception p0
 
@@ -2627,7 +2671,7 @@
 
     throw p0
 
-    .line 196
+    .line 202
     :cond_9
     :goto_6
     return-void
@@ -2903,7 +2947,7 @@
 .method static removeUpdateStrip(Ljava/lang/Object;)V
     .locals 5
 
-    .line 179
+    .line 185
     const-string v0, "a"
 
     :try_start_0
@@ -2951,7 +2995,7 @@
 
     invoke-virtual {v2}, Landroid/view/ViewGroup;->requestLayout()V
 
-    .line 180
+    .line 186
     :cond_0
     const-string v1, "b"
 
@@ -2988,7 +3032,7 @@
 
     goto :goto_0
 
-    .line 181
+    .line 187
     :cond_1
     goto :goto_1
 
@@ -3001,7 +3045,7 @@
 
     invoke-static {v0, v1, p0}, Landroid/util/Log;->e(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
-    .line 182
+    .line 188
     :goto_1
     return-void
 .end method
@@ -3009,7 +3053,7 @@
 .method private static restoreGreeting(Landroid/view/View;)V
     .locals 3
 
-    .line 187
+    .line 193
     :try_start_0
     sget-object v0, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->greetingViews:Ljava/util/Map;
 
@@ -3070,7 +3114,7 @@
 .method private static restoreReaction(Landroid/view/View;)V
     .locals 2
 
-    .line 185
+    .line 191
     sget-object v0, Lcc/ioctl/tmoe/startup/ModernFeatureHooks;->reactionViews:Ljava/util/Map;
 
     invoke-interface {v0, p0}, Ljava/util/Map;->containsKey(Ljava/lang/Object;)Z
