@@ -55,7 +55,7 @@ public class ProxyFragmentImplDexCreator {
             Class<?> actionBar, Class<?> actionBarLayout)
             throws ReflectiveOperationException, IOException {
         // Bump whenever bridge semantics change: never reuse a dex from the APK patch.
-        String hashCode = Integer.toHexString(Objects.hash("exact-host-v3",
+        String hashCode = Integer.toHexString(Objects.hash("exact-host-v4-parameter-parser",
                 baseFragmentClass.getName(), actionBar.getName(), actionBarLayout.getName(),
                 HostInfo.getPackageName(), HostInfo.getVersionCode(), BuildConfig.VERSION_NAME,
                 BuildConfig.VERSION_CODE, BuildConfig.BUILD_UUID));

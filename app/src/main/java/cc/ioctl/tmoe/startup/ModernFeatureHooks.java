@@ -164,12 +164,8 @@ public final class ModernFeatureHooks {
     private static void closeExistingUpdatePopup(){try{android.app.Dialog dialog=lastUpdatePopup.get();if(dialog!=null&&dialog.isShowing())dialog.getClass().getMethod("dismissInternal").invoke(dialog);}catch(Throwable e){Log.e("TMoe-UI","close active update popup",e);}}
     private static void hideReaction(View v,Method bind,Object[] arguments){
         ReactionState previous=reactionViews.get(v);ReactionState state=new ReactionState(v,bind,arguments);
-        if(previous!=null)state=new ReactionStateSnapshot(previous,bind,arguments).state;
+        if(previous!=null)state=new ReactionState(previous.height,previous.visibility,bind,arguments);
         reactionViews.put(v,state);v.setVisibility(View.GONE);ViewGroup.LayoutParams p=v.getLayoutParams();if(p!=null){p.height=0;v.setLayoutParams(p);}v.requestLayout();
-    }
-    private static final class ReactionStateSnapshot {
-        final ReactionState state;
-        ReactionStateSnapshot(ReactionState original,Method bind,Object[] args){state=new ReactionState(original.height,original.visibility,bind,args);}
     }
     private static void restoreReaction(View v,boolean rebind){
         ReactionState state=reactionViews.remove(v);if(state==null)return;

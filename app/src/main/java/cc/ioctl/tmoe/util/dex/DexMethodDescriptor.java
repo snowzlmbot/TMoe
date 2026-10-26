@@ -65,28 +65,24 @@ public class DexMethodDescriptor implements Serializable, Cloneable {
     }
 
     public static List<String> splitParameterTypes(String s) {
-        int i = 0;
+        if (s == null) throw new NullPointerException("parameters");
         ArrayList<String> list = new ArrayList<>();
+        int i = 0;
         while (i < s.length()) {
-            char c = s.charAt(i);
-            if (c == 'L') {
-                int j = s.indexOf(';', i);
-                list.add(s.substring(i, j + 1));
-                i = j + 1;
-            } else if (c == '[') {
-                int j = i;
-                while (s.charAt(j) == '[') {
-                    j++;
-                }
-                if (s.charAt(j) == 'L') {
-                    j = s.indexOf(';', j);
-                }
-                list.add(s.substring(i, j + 1));
-                i = j + 1;
+            int start = i;
+            while (i < s.length() && s.charAt(i) == '[') i++;
+            if (i == s.length()) throw new IllegalArgumentException("Incomplete array descriptor: " + s);
+            char component = s.charAt(i);
+            if (component == 'L') {
+                int end = s.indexOf(';', i);
+                if (end <= i + 1) throw new IllegalArgumentException("Invalid object descriptor: " + s);
+                i = end + 1;
             } else {
-                list.add(String.valueOf(c));
+                if ("ZBCSIJFD".indexOf(component) < 0)
+                    throw new IllegalArgumentException("Invalid parameter descriptor: " + s);
+                i++;
             }
-            i++;
+            list.add(s.substring(start, i));
         }
         return list;
     }
